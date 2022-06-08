@@ -4,9 +4,8 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:happy_pug/data_base.dart';
 import 'package:html/parser.dart';
 import 'package:web_scraper/web_scraper.dart';
-import 'next_page.dart';
-import 'another_page.dart';
 import 'login_page.dart';
+import 'search_results.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -15,13 +14,11 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
+import 'package:learning_input_image/learning_input_image.dart';
+import 'package:learning_text_recognition/learning_text_recognition.dart';
+import 'package:provider/provider.dart';
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
-// void main() {
-//
-//   runApp(const MyApp());
-// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -31,89 +28,144 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget { //global data, style of entire app
-  const MyApp({Key? key}) : super(key: key);
+  // const MyApp({super.key});
+  //
+  // @override
+  // Widget build(BuildContext context) {
+  //    ChangeNotifierProvider(
+  //     create: (_) => TextRecognitionState(),
+  //      child: Scaffold(
+  //
+  //      ),
+  //   );
+  //   return MaterialApp(
+  //     debugShowCheckedModeBanner: false,
+  //     title: 'Welcome to Flutter',
+  //     home: Scaffold(
+  //       appBar: AppBar(
+  //         title: const Text('Home'),
+  //       ),
+  //       body: const Center(
+  //         child: Text('This is a home page'),
+  //       ),
+  //
+  //     ),
+  //   );
+  // }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',  //name of app
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.lightBlue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryTextTheme: TextTheme(
+          headline6: TextStyle(color: Colors.white),
+        ),
+
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),  //home screen
+       home: ChangeNotifierProvider(
+         create: (_) => TextRecognitionState(),
+         child: TextRecognitionPage(title: "HI"),  //layout of text_recongnition
+       )
+        //Scaffold(
+      //     body: ChangeNotifierProvider(
+      //       create: (_) => TextRecognitionState(),
+      //       child: TextRecognitionPage(title: "HI"),  //layout of text_recongnition
+      //     )
+      // ),
 
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class TextRecognitionPage extends StatefulWidget {
 
-  const MyHomePage({Key? key, required this.title}) : super(key: key);//constructor
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+  const TextRecognitionPage({Key? key, required this.title}) : super(key: key);//constructor
   final String title; //attribute
-
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<TextRecognitionPage> createState() => _TextRecognitionPageState();
 
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class  _TextRecognitionPageState  extends State<TextRecognitionPage> {
   //home screen actions
   String _scanBarcode = 'Unknown';
-  late final Future? myFuture;
+  //late final Future? myFuture;
+  String ingredients = "";
 
+  TextRecognition? _textRecognition = TextRecognition(
+    options: TextRecognitionOptions.Default,
+  );
 
+  Future<void> _startRecognition(InputImage image) async {
+    TextRecognitionState state = Provider.of(context, listen: false);
 
-  Future<void> startBarcodeScanStream() async {
-    FlutterBarcodeScanner.getBarcodeStreamReceiver(
-        '#33fff3', 'Cancel', true, ScanMode.BARCODE)!
-        .listen((barcode) => print('BC' + barcode));
+    if (state.isNotProcessing) {
+      state.startProcessing();
+      state.image = image;
+      state.data = await _textRecognition?.process(image);
+      state.stopProcessing();
+    }
+    ingredients = state.text;  //assign text into a String called ingredients
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#33fff3', 'Cancel', true, ScanMode.BARCODE);
-      print(barcodeScanRes);
-    }
-    on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
-    }
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-    setState(() {
-      _scanBarcode = barcodeScanRes;
-    });
+  @override
+  void dispose() {
+    _textRecognition?.dispose();
+    super.dispose();
   }
+
+  Future<void> _getIngredients() async {
+    String trim_ingredients = ingredients.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
+    List<String> split = trim_ingredients.split(",");
+    final len = split.length;
+
+    print(split);
+    for(var i =0; i <len; i++){
+      if(split[i] == "L-Carnitine"){
+        print("FOUND");
+        return;
+      }
+    }
+  print("hi");
+
+   // print("Size of ingredient list: $len");
+  // print(split[10]);
+  }
+
+  // Future<void> startBarcodeScanStream() async {
+  //   FlutterBarcodeScanner.getBarcodeStreamReceiver(
+  //       '#33fff3', 'Cancel', true, ScanMode.BARCODE)!
+  //       .listen((barcode) => print('BarCode:' + barcode));
+  // }
+  //
+  // // Platform messages are asynchronous, so we initialize in an async method.
+  // Future<void> scanBarcodeNormal() async {
+  //   String barcodeScanRes;
+  //   // Platform messages may fail, so we use a try/catch PlatformException.
+  //   try {
+  //     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+  //         '#33fff3', 'Cancel', true, ScanMode.BARCODE);
+  //     print(barcodeScanRes);
+  //   }
+  //   on PlatformException {
+  //     barcodeScanRes = 'Failed to get platform version.';
+  //   }
+  //   // If the widget was removed from the tree while the asynchronous platform
+  //   // message was in flight, we want to discard the reply rather than calling
+  //   // setState to update our non-existent appearance.
+  //   if (!mounted) return;
+  //   setState(() {
+  //     _scanBarcode = barcodeScanRes;
+  //   });
+  // }
  void loginPage(){
     setState((){
       Navigator.push( //change from one screen to another
         context,
-        MaterialPageRoute(builder: (context) => const MyLoginPage(title: 'Login')),
+        MaterialPageRoute(builder: (context) => const MySearchResultsPage(title: 'Login')),
       );
       print("Now on Login Page");//debug
     });
@@ -129,184 +181,195 @@ class _MyHomePageState extends State<MyHomePage> {
  }
 
 
-  // Future<List<Ingredient>> _getIngredients() async{
-  //   var data =
-  //       await http.get("https://tailblazerspets.com/tailblazers-pet-ingredient-dictionary.php");
-  //   var jsonData = jsonDecode(data.body);
-  //   List<Ingredient> ingredients = [];
   //
-  //   for(var ingredient in jsonData["result"]){
-  //     Ingredient newIngredient = Ingredient(ingredient["name"], ingredient["value"]);
-  //     ingredients.add(newIngredient);
-  //   }
-  //   print(ingredients);
-  //   return ingredients;
+  // @override
+  // void initState() {
+  //   super.initState();
+  // // TextRecognitionPage(title: "TEST",);
+  //  //  ChangeNotifierProvider(
+  //  //      create: (_) => TextRecognitionState(),
+  //  //  );
+  //  // myFuture = scanBarcodeNormal();
+  //  // _getIngredients();
   // }
-
-  // // initialize WebScraper by passing base url of website
-  // final webScraper = WebScraper('https://webscraper.io');
-  //
-  // // Response of getElement is always List<Map<String, dynamic>>
-  // List<Map<String, dynamic>>? productNames;
-  // late List<Map<String, dynamic>> productDescriptions;
-  //
-  // void fetchProducts() async {
-  //   // Loads web page and downloads into local state of library
-  //   if (await webScraper
-  //       .loadWebPage('/test-sites/e-commerce/allinone/computers/laptops')) {
-  //     setState(() {
-  //       // getElement takes the address of html tag/element and attributes you want to scrap from website
-  //       // it will return the attributes in the same order passed
-  //       productNames = webScraper.getElement(
-  //           'div.thumbnail > div.caption > h4 > a.title', ['href', 'title']);
-  //       productDescriptions = webScraper.getElement(
-  //           'div.thumbnail > div.caption > p.description', ['class']);
-  //     });
-  //   }
-  //   print((productDescriptions));
-  // }
-
-
-//   Future<List<String>> _getIngredients() async {
-// //Getting the response from the targeted url
-//     final response =
-//     await http.Client().get(Uri.parse('https://tailblazerspets.com/tailblazers-pet-ingredient-dictionary.php'));
-//     //Status Code 200 means response has been received successfully
-//     if (response.statusCode == 200) {
-//       //Getting the html document from the response
-//       var document = parser.parse(response.body);
-//       try {
-//         //Scraping the first article title
-//         var responseString1 = document
-//             .getElementsByClassName('row flex-container')[0]
-//             .children[0]
-//             .children[0];
-//         print(responseString1.text.trim());
-//
-//
-//
-//
-//         //Converting the extracted titles into string and returning a list of Strings
-//         return [
-//           responseString1.text.trim()
-//         ];
-//       } catch (e) {
-//         return ['', '', 'ERROR!'];
-//       }
-//     } else {
-//       return ['', '', 'ERROR: ${response.statusCode}.'];
-//     }
-//   }
-
-  // Future _getIngredients() async{ //get data on web
-  //   // final url =
-  //   //   Uri.parse('https://tailblazerspets.com/tailblazers-pet-ingredient-dictionary.php');
-  //   // final response = await http.get(url);
-  //   // dom.Document html = dom.Document.html(response.body);
-  //   //
-  //   // final ingredients= html
-  //   //   .querySelectorAll('button.btn-3d:nth-child(1)')
-  //   //    .map((element) => element.innerHtml.trim()).toList();
-  //   //
-  //   // print('Count: ${ingredients.length}');
-  //   // for (final ingredient in ingredients){
-  //   //   debugPrint(ingredient);
-  //   // }
-  //   //
-  //   // setState((){
-  //   //   ingredientlist = List.generate(
-  //   //       ingredients.length
-  //   //       , (index) => Ingredient(
-  //   //           name,
-  //   //           color,
-  //   //           url
-  //   //         ),
-  //   //       );
-  //   // });
-  //
-  //
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    myFuture = scanBarcodeNormal();
-   // _getIngredients();
-  }
 
   @override
   Widget build(BuildContext context) {
-    //entire UI
-    return FutureBuilder(
-        future: myFuture, //display
-        builder: (context, snapshot) { //display once done scanning
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Scaffold( //default UI
-                appBar: AppBar(
-                  // Here we take the value from the MyHomePage object that was created by
-                  // the App.build method, and use it to set our appbar title.
-                  title: Text("Barcode Scan-" + widget.title),
-                ),
+    return InputCameraView(
+          mode: InputCameraMode.gallery,
+          //resolutionPreset: ResolutionPreset.high,
+           title: '',
+          onImage: _startRecognition,
+          overlay: Consumer<TextRecognitionState>(
+            builder: (_, state, __) {
+              if (state.isNotEmpty) {
+                return Center(
+                    child: FutureBuilder(
+                        future: _getIngredients(),  //debug
+                        builder: (context, snapshot){
+                          if (state._isProcessing == false) { //Data is done processing
+                            return Scaffold(      //default UI
+                                body: Center(
+                                  // Center is a layout widget. It takes a single child and positions it
+                                  // in the middle of the parent.
+                                    child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center, //alignment
+                                        children: <Widget>[
+                                          //list of widgets
+                                          ElevatedButton(
+                                              onPressed: () => loginPage(),
+                                              child: Text(
+                                                'login_page',
+                                              )
+                                          ),
+                                          ElevatedButton(
+                                              onPressed: () => databasePage(),
+                                              child: Text(
+                                                'data_base',
+                                              )
+                                          ),
 
-                body: Center(
-                  // Center is a layout widget. It takes a single child and positions it
-                  // in the middle of the parent.
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center, //alignment
-                        children: <Widget>[ //list of widgets
-                          Text(
-                              'Scan result : $_scanBarcode\n',
-                              style: TextStyle(fontSize: 20)
-                          ),
-                          ElevatedButton(
-                            onPressed: () => scanBarcodeNormal(),
-                            child: Text(
-                              'Try again ',
-                           )
-                          ),
-                          ElevatedButton(
-                              onPressed: () => loginPage(),
-                              child: Text(
-                                'login_page',
-                              )
-                          ),
-                          ElevatedButton(
-                              onPressed: () => databasePage(),
-                              child: Text(
-                                'data_base',
-                              )
-                          ),
+                                        ]
+                                    )
 
-                        ]
+                                )
+                            );
+                          }
+                          else{
+                            return CircularProgressIndicator();
+                          }
+
+                        }
                     )
 
-                )
-            );
-          }
-          else { //when loading
-            return CircularProgressIndicator();
-          }
-        }
+                );
+              }
+              return Center();
+            },
+          ),
     );
+
+    // child: Container(
+    //   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+    //   decoration: BoxDecoration(
+    //     color: Colors.white.withOpacity(0.8),
+    //     borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    //   ),
+    //   child: Text("Finished Scanning!"),
+    //   // child: Text(  //output ingredient to screen
+    //   //   state.text, //ingredients
+    //   //   style: TextStyle(
+    //   //     fontWeight: FontWeight.w500,
+    //   //   ),
+    //   //
+    //   // ),
+    // ),
+
+    // entire UI
+    // return FutureBuilder(
+    //     future: myFuture,
+    //     builder: (context, snapshot) { //display once done scanning
+    //       if (snapshot.connectionState == ConnectionState.done) {
+    //         return Scaffold( //default UI
+    //             appBar: AppBar(
+    //               // Here we take the value from the MyHomePage object that was created by
+    //               // the App.build method, and use it to set our appbar title.
+    //               title: Text("Barcode Scan-" + widget.title),
+    //             ),
+    //
+    //             body: Center(
+    //               // Center is a layout widget. It takes a single child and positions it
+    //               // in the middle of the parent.
+    //                 child: Column(
+    //                     mainAxisAlignment: MainAxisAlignment.center, //alignment
+    //                     children: <Widget>[ //list of widgets
+    //                       Text(
+    //                           'Scan result : $_scanBarcode\n',
+    //                           style: TextStyle(fontSize: 20)
+    //                       ),
+    //                       ElevatedButton(
+    //                         onPressed: () => scanBarcodeNormal(),
+    //                         child: Text(
+    //                           'Try again ',
+    //                        )
+    //                       ),
+    //                       ElevatedButton(
+    //                           onPressed: () => loginPage(),
+    //                           child: Text(
+    //                             'login_page',
+    //                           )
+    //                       ),
+    //                       ElevatedButton(
+    //                           onPressed: () => databasePage(),
+    //                           child: Text(
+    //                             'data_base',
+    //                           )
+    //                       ),
+    //
+    //                     ]
+    //                 )
+    //
+    //             )
+    //         );
+    //       }
+    //       else { //when loading
+    //         return CircularProgressIndicator();
+    //       }
+    //     }
+    // );
   }
 }
 
-class Ingredient {
-  final String name;
-  final String role;
+class TextRecognitionState extends ChangeNotifier {
+  InputImage? _image;
+  RecognizedText? _data;
+  bool _isProcessing = false;
 
-  const Ingredient({
-    required this.name,
-    required this.role,
-  });
+  InputImage? get image => _image;
+  RecognizedText? get data => _data;
+  String get text => _data!.text;
+  bool get isNotProcessing => !_isProcessing;
+  bool get isNotEmpty => _data != null && text.isNotEmpty;
 
-  factory Ingredient.fromJson(Map<String, dynamic> json) {
-    return Ingredient(
-      name: json['name'] as String,
-      role: json['role'] as String,
-    );
+  void startProcessing() {
+    _isProcessing = true;
+    notifyListeners();
   }
-//         child: Column(
+
+  void stopProcessing() {
+    _isProcessing = false;
+    notifyListeners();
+  }
+
+  set image(InputImage? image) {
+    _image = image;
+    notifyListeners();
+  }
+
+  set data(RecognizedText? data) {
+    _data = data;
+    notifyListeners();
+  }
+}
+
+
+
+// class Ingredient {
+//   final String name;
+//   final String role;
+//
+//   const Ingredient({
+//     required this.name,
+//     required this.role,
+//   });
+//
+//   factory Ingredient.fromJson(Map<String, dynamic> json) {
+//     return Ingredient(
+//       name: json['name'] as String,
+//       role: json['role'] as String,
+//     );
+//   }
+// //         child: Column(
 //           // Column is also a layout widget. It takes a list of children and
 //           // arranges them vertically. By default, it sizes itself to fit its
 //           // children horizontally, and tries to be as tall as its parent.
@@ -387,4 +450,4 @@ class Ingredient {
 //
 //     );
 //
-}
+

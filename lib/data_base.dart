@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:happy_pug/another_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class MyDatabasePage extends StatefulWidget {
   const MyDatabasePage({Key? key, required this.title}) : super(key: key);//constructor
@@ -14,6 +12,7 @@ class MyDatabasePage extends StatefulWidget {
 class _MyDatabaseState extends State<MyDatabasePage> {  //home screen actions
   TextEditingController colorController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController labelController = TextEditingController();
   TextEditingController nameController = TextEditingController();
 
   @override
@@ -45,6 +44,16 @@ class _MyDatabaseState extends State<MyDatabasePage> {  //home screen actions
                   labelText: 'Description',
                 )
             ),
+
+            TextField(
+                controller: labelController,
+                obscureText: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Label',
+                )
+            ),
+
             TextField(
                 controller: nameController,
                 obscureText: false,
@@ -55,12 +64,14 @@ class _MyDatabaseState extends State<MyDatabasePage> {  //home screen actions
             ),
 
 
+
             ElevatedButton(
                 onPressed: (){
                   FirebaseFirestore.instance.collection("ingredients").add(
                     {
                       "color": colorController.text,
                       "description": descriptionController.text,
+                      "label": labelController.text,
                       "name": nameController.text,
                     }).then((value) {
                       print("Successfully added ingredient");
@@ -69,7 +80,7 @@ class _MyDatabaseState extends State<MyDatabasePage> {  //home screen actions
                       print(error);
                   });
                 },
-                child: Text("Enter")
+                child: Text("Add Ingredient")
             ),
             ElevatedButton(
                 onPressed: (){
