@@ -1,22 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:happy_pug/data_base.dart';
-import 'package:html/parser.dart';
-import 'package:web_scraper/web_scraper.dart';
-import 'login_page.dart';
-import 'search_results.dart';
-import 'package:flutter/services.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart' as parser;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:happy_pug/search_results.dart';
 import 'firebase_options.dart';
-import 'package:learning_input_image/learning_input_image.dart';
-import 'package:learning_text_recognition/learning_text_recognition.dart';
-import 'package:provider/provider.dart';
+import 'dart:io';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'login_page.dart';
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
@@ -28,242 +18,252 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget { //global data, style of entire app
-  // const MyApp({super.key});
-  //
-  // @override
-  // Widget build(BuildContext context) {
-  //    ChangeNotifierProvider(
-  //     create: (_) => TextRecognitionState(),
-  //      child: Scaffold(
-  //
-  //      ),
-  //   );
-  //   return MaterialApp(
-  //     debugShowCheckedModeBanner: false,
-  //     title: 'Welcome to Flutter',
-  //     home: Scaffold(
-  //       appBar: AppBar(
-  //         title: const Text('Home'),
-  //       ),
-  //       body: const Center(
-  //         child: Text('This is a home page'),
-  //       ),
-  //
-  //     ),
-  //   );
-  // }
+  MyApp({Key? key}) : super(key: key);
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        primaryTextTheme: TextTheme(
-          headline6: TextStyle(color: Colors.white),
-        ),
-
+        primarySwatch: Colors.purple,
       ),
-       home: ChangeNotifierProvider(
-         create: (_) => TextRecognitionState(),
-         child: TextRecognitionPage(title: "HI"),  //layout of text_recongnition
-       )
-        //Scaffold(
-      //     body: ChangeNotifierProvider(
-      //       create: (_) => TextRecognitionState(),
-      //       child: TextRecognitionPage(title: "HI"),  //layout of text_recongnition
-      //     )
-      // ),
-
+      home: const MyHomePage(title: 'Results'),
     );
   }
 }
 
-class TextRecognitionPage extends StatefulWidget {
-
-  const TextRecognitionPage({Key? key, required this.title}) : super(key: key);//constructor
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);//constructor
   final String title; //attribute
-  @override
-  State<TextRecognitionPage> createState() => _TextRecognitionPageState();
 
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
 }
-
-class  _TextRecognitionPageState  extends State<TextRecognitionPage> {
-  //home screen actions
-  String _scanBarcode = 'Unknown';
-  //late final Future? myFuture;
-  String ingredients = "";
-
-  TextRecognition? _textRecognition = TextRecognition(
-    options: TextRecognitionOptions.Default,
-  );
-
-  Future<void> _startRecognition(InputImage image) async {
-    TextRecognitionState state = Provider.of(context, listen: false);
-
-    if (state.isNotProcessing) {
-      state.startProcessing();
-      state.image = image;
-      state.data = await _textRecognition?.process(image);
-      state.stopProcessing();
-    }
-    ingredients = state.text;  //assign text into a String called ingredients
-  }
+class _MyHomePageState extends State<MyHomePage> {
+  bool textScanning = false;
+  XFile? imageFile;
+  String scannedText = "";
 
   @override
-  void dispose() {
-    _textRecognition?.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _getIngredients(),
+        builder:(context, snapshot){
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text("Text Recognition example"),
+            ),
+            body: Center(
+                child: SingleChildScrollView(
+                  child: Container(
+                      margin: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () => searchResultsPage(),
+                              child: Text(
+                                'search_page',
+                              )
+                          ),
+
+                          ElevatedButton(
+                              onPressed: () => loginPage(),
+                              child: Text(
+                                'login_page',
+                              )
+                          ),
+                          ElevatedButton(
+                              onPressed: () => databasePage(),
+                              child: Text(
+                                'data_base',
+                              )
+                          ),
+                          if (textScanning) const CircularProgressIndicator(),
+                          if (!textScanning && imageFile == null)
+                            Container(  //Picture container
+                              width: 300,
+                              height: 300,
+                              color: Colors.grey[300]!,
+                            ),
+                          if (imageFile != null) Image.file(File(imageFile!.path)),
+                          Row(  //UI
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(  //Gallery button
+                                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.white,
+                                      onPrimary: Colors.grey,
+                                      shadowColor: Colors.grey[400],
+                                      elevation: 10,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8.0)),
+                                    ),
+                                    onPressed: () {
+                                      getImage(ImageSource.gallery);
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 5),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.image,
+                                            size: 30,
+                                          ),
+                                          Text(
+                                            "Gallery",
+                                            style: TextStyle(
+                                                fontSize: 13, color: Colors.grey[600]),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )),
+                              Container(  //Camera button
+                                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.white,
+                                      onPrimary: Colors.grey,
+                                      shadowColor: Colors.grey[400],
+                                      elevation: 10,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8.0)),
+                                    ),
+                                    onPressed: () {
+                                      getImage(ImageSource.camera);
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 5),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.camera_alt,
+                                            size: 30,
+                                          ),
+                                          Text(
+                                            "Camera",
+                                            style: TextStyle(
+                                                fontSize: 13, color: Colors.grey[600]),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          // Container(  //display results
+                          //   child: Text(
+                          //     scannedText,
+                          //     style: TextStyle(fontSize: 20),
+                          //   ),
+                          // )
+                        ],
+                      )),
+                )),
+          );
+
+      }
+    );
+
   }
 
   Future<void> _getIngredients() async {
-    String trim_ingredients = ingredients.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
+    String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
     List<String> split = trim_ingredients.split(",");
     final len = split.length;
 
     print(split);
     for(var i =0; i <len; i++){
-      if(split[i] == "L-Carnitine"){
+      if(split[i] == "Salt"){
         print("FOUND");
         return;
       }
     }
-  print("hi");
+    print("hi");
 
-   // print("Size of ingredient list: $len");
-  // print(split[10]);
+    // print("Size of ingredient list: $len");
+    // print(split[10]);
   }
 
-  // Future<void> startBarcodeScanStream() async {
-  //   FlutterBarcodeScanner.getBarcodeStreamReceiver(
-  //       '#33fff3', 'Cancel', true, ScanMode.BARCODE)!
-  //       .listen((barcode) => print('BarCode:' + barcode));
-  // }
-  //
-  // // Platform messages are asynchronous, so we initialize in an async method.
-  // Future<void> scanBarcodeNormal() async {
-  //   String barcodeScanRes;
-  //   // Platform messages may fail, so we use a try/catch PlatformException.
-  //   try {
-  //     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-  //         '#33fff3', 'Cancel', true, ScanMode.BARCODE);
-  //     print(barcodeScanRes);
-  //   }
-  //   on PlatformException {
-  //     barcodeScanRes = 'Failed to get platform version.';
-  //   }
-  //   // If the widget was removed from the tree while the asynchronous platform
-  //   // message was in flight, we want to discard the reply rather than calling
-  //   // setState to update our non-existent appearance.
-  //   if (!mounted) return;
-  //   setState(() {
-  //     _scanBarcode = barcodeScanRes;
-  //   });
-  // }
- void loginPage(){
+  void getImage(ImageSource source) async {
+    try {
+      final pickedImage = await ImagePicker().pickImage(source: source);
+      if (pickedImage != null) {
+        textScanning = true;
+        imageFile = pickedImage;
+        setState(() {});
+        getRecognisedText(pickedImage);
+      }
+    } catch (e) {
+      textScanning = false;
+      imageFile = null;
+      scannedText = "Error occured while scanning";
+      setState(() {});
+    }
+  }
+
+  void getRecognisedText(XFile image) async {
+    final inputImage = InputImage.fromFilePath(image.path);
+    final textDetector = GoogleMlKit.vision.textDetector();
+    RecognisedText recognisedText = await textDetector.processImage(inputImage);
+    await textDetector.close();
+    scannedText = "";
+    for (TextBlock block in recognisedText.blocks) {
+      for (TextLine line in block.lines) {
+        scannedText = scannedText + line.text + "\n";
+      }
+    }
+    textScanning = false;
+    setState(() {});
+  }
+
+  void searchResultsPage(){
     setState((){
       Navigator.push( //change from one screen to another
         context,
-        MaterialPageRoute(builder: (context) => const MySearchResultsPage(title: 'Login')),
+        MaterialPageRoute(builder: (context) => const MySearchResultsPage(title: 'search_results')),
+      );
+      print("Now on Search Results Page");//debug
+    });
+  }
+  void loginPage(){
+    setState((){
+      Navigator.push( //change from one screen to another
+        context,
+        MaterialPageRoute(builder: (context) => const MyLoginPage(title: 'Login')),
       );
       print("Now on Login Page");//debug
     });
- }
- void databasePage(){
-   setState((){
-     Navigator.push( //change from one screen to another
-       context,
-       MaterialPageRoute(builder: (context) => const MyDatabasePage(title: 'Database')),
-     );
-     print("Now on Database Page");//debug
-   });
- }
-
-
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  // // TextRecognitionPage(title: "TEST",);
-  //  //  ChangeNotifierProvider(
-  //  //      create: (_) => TextRecognitionState(),
-  //  //  );
-  //  // myFuture = scanBarcodeNormal();
-  //  // _getIngredients();
-  // }
+  }
+  void databasePage(){
+    setState((){
+      Navigator.push( //change from one screen to another
+        context,
+        MaterialPageRoute(builder: (context) => const MyDatabasePage(title: 'Database')),
+      );
+      print("Now on Database Page");//debug
+    });
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return InputCameraView(
-          mode: InputCameraMode.gallery,
-          //resolutionPreset: ResolutionPreset.high,
-           title: '',
-          onImage: _startRecognition,
-          overlay: Consumer<TextRecognitionState>(
-            builder: (_, state, __) {
-              if (state.isNotEmpty) {
-                return Center(
-                    child: FutureBuilder(
-                        future: _getIngredients(),  //debug
-                        builder: (context, snapshot){
-                          if (state._isProcessing == false) { //Data is done processing
-                            return Scaffold(      //default UI
-                                body: Center(
-                                  // Center is a layout widget. It takes a single child and positions it
-                                  // in the middle of the parent.
-                                    child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center, //alignment
-                                        children: <Widget>[
-                                          //list of widgets
-                                          ElevatedButton(
-                                              onPressed: () => loginPage(),
-                                              child: Text(
-                                                'login_page',
-                                              )
-                                          ),
-                                          ElevatedButton(
-                                              onPressed: () => databasePage(),
-                                              child: Text(
-                                                'data_base',
-                                              )
-                                          ),
-
-                                        ]
-                                    )
-
-                                )
-                            );
-                          }
-                          else{
-                            return CircularProgressIndicator();
-                          }
-
-                        }
-                    )
-
-                );
-              }
-              return Center();
-            },
-          ),
-    );
-
-    // child: Container(
-    //   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-    //   decoration: BoxDecoration(
-    //     color: Colors.white.withOpacity(0.8),
-    //     borderRadius: BorderRadius.all(Radius.circular(4.0)),
-    //   ),
-    //   child: Text("Finished Scanning!"),
-    //   // child: Text(  //output ingredient to screen
-    //   //   state.text, //ingredients
-    //   //   style: TextStyle(
-    //   //     fontWeight: FontWeight.w500,
-    //   //   ),
-    //   //
-    //   // ),
-    // ),
+  void initState() {
+    super.initState();
+  }
+}
 
     // entire UI
     // return FutureBuilder(
@@ -317,41 +317,6 @@ class  _TextRecognitionPageState  extends State<TextRecognitionPage> {
     //       }
     //     }
     // );
-  }
-}
-
-class TextRecognitionState extends ChangeNotifier {
-  InputImage? _image;
-  RecognizedText? _data;
-  bool _isProcessing = false;
-
-  InputImage? get image => _image;
-  RecognizedText? get data => _data;
-  String get text => _data!.text;
-  bool get isNotProcessing => !_isProcessing;
-  bool get isNotEmpty => _data != null && text.isNotEmpty;
-
-  void startProcessing() {
-    _isProcessing = true;
-    notifyListeners();
-  }
-
-  void stopProcessing() {
-    _isProcessing = false;
-    notifyListeners();
-  }
-
-  set image(InputImage? image) {
-    _image = image;
-    notifyListeners();
-  }
-
-  set data(RecognizedText? data) {
-    _data = data;
-    notifyListeners();
-  }
-}
-
 
 
 // class Ingredient {
