@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool textScanning = false;
   XFile? imageFile;
   String scannedText = "";
+  Map<String, dynamic> filtered_ingredients = {};
 
   @override
   Widget build(BuildContext context) {
@@ -198,10 +199,6 @@ class _MyHomePageState extends State<MyHomePage> {
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
     final len = scannedIngredients.length;
 
-    print(scannedIngredients);
-
-
-    Map<String, dynamic> filtered_ingredients = {};
     ReCase rc_name;
 
     FirebaseFirestore.instance.collection("ingredients").get()
@@ -212,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
         rc_name = ReCase(element.data()['name']);
         String cc_name = rc_name.camelCase;
         String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
-        print(formatted_name);
+
         //find where ingredients in database == scanned ingredients and store in map
         for (var i = 0; i < len; i++) {
           if (formatted_name == scannedIngredients[i]) {
@@ -222,19 +219,15 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       });
-
-      print("Common ingredients found: ");
-      print(filtered_ingredients.keys);
-      print(filtered_ingredients);
-
     }).catchError((error){
       print("Fail to load all ingredients");
       print(error);
     });
 
-
-
-    //searchResultsPage();  //go to result page once finished filtering
+    //print("Common ingredients found: ");
+    //print(filtered_ingredients.keys);
+    //print(filtered_ingredients);
+    searchResultsPage();  //go to result page once finished filtering
   }
 
   void getImage(ImageSource source) async {
@@ -271,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //get test in the TextField and start search_results page
   void searchResultsPage(){
-    String textToSend = scannedText;
+    Map<String, dynamic> textToSend = filtered_ingredients;
     setState((){
       Navigator.push( //change from one screen to another
         context,

@@ -5,7 +5,7 @@ class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.text})
       : super(key: key);//constructor
   final String title; //attribute
-  final String text;
+  final Map<String, dynamic> text;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
@@ -28,9 +28,14 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     children: <Widget>[
                       Container(  //display scanned ingredients
                         child: Text(
-                          //widget.text,
                           widget.title,
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          "Ingredients Found: ${widget.text.keys}", //From home screen
+                          style: TextStyle(fontSize: 20),
                         ),
                       ),
                       ElevatedButton(
