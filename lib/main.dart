@@ -8,11 +8,8 @@ import 'dart:io';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_page.dart';
-import 'package:after_layout/after_layout.dart';
-import 'package:auth/auth.dart';
-import 'package:basic_utils/basic_utils.dart';
 import 'package:recase/recase.dart';
-import 'package:string_extensions/string_extensions.dart';
+
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
@@ -51,6 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   XFile? imageFile;
   String scannedText = "";
   Map<String, dynamic> filtered_ingredients = {};
+  Map<String, List<String>> results = {};
 
   @override
   Widget build(BuildContext context) {
@@ -214,20 +212,26 @@ class _MyHomePageState extends State<MyHomePage> {
         for (var i = 0; i < len; i++) {
           if (formatted_name == scannedIngredients[i]) {
             print("FOUND");
-            filtered_ingredients[element.data()['name']] = element.data();
+            //filtered_ingredients[element.data()['name']] = element.data();
+            //results.update(element.data()['name'], (value) => element.data()['name']);
+             results[element.data()['name']] = [element.data()['description'],
+             element.data()['color'], element.data()['label']];
             break;
           }
         }
       });
+
     }).catchError((error){
       print("Fail to load all ingredients");
       print(error);
     });
 
+    print(results.keys);
+   //print(filtered_ingredients.keys);
     //print("Common ingredients found: ");
     //print(filtered_ingredients.keys);
     //print(filtered_ingredients);
-    searchResultsPage();  //go to result page once finished filtering
+   // searchResultsPage();  //go to result page once finished filtering
   }
 
   void getImage(ImageSource source) async {
