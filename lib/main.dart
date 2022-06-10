@@ -213,25 +213,24 @@ class _MyHomePageState extends State<MyHomePage> {
           if (formatted_name == scannedIngredients[i]) {
             print("FOUND");
             //filtered_ingredients[element.data()['name']] = element.data();
-            //results.update(element.data()['name'], (value) => element.data()['name']);
+            //Add name as key and fields as value
              results[element.data()['name']] = [element.data()['description'],
              element.data()['color'], element.data()['label']];
             break;
           }
         }
       });
-
     }).catchError((error){
       print("Fail to load all ingredients");
       print(error);
     });
 
+    print("Common ingredients found: ");
     print(results.keys);
    //print(filtered_ingredients.keys);
-    //print("Common ingredients found: ");
     //print(filtered_ingredients.keys);
     //print(filtered_ingredients);
-   // searchResultsPage();  //go to result page once finished filtering
+    searchResultsPage();  //go to result page once finished filtering
   }
 
   void getImage(ImageSource source) async {
@@ -268,14 +267,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //get test in the TextField and start search_results page
   void searchResultsPage(){
-    Map<String, dynamic> textToSend = filtered_ingredients;
+    //Map<String, dynamic> textToSend = filtered_ingredients;
+    Map<String, List<String>> textToSend = results;
+
     setState((){
       Navigator.push( //change from one screen to another
         context,
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
             text: textToSend)),
       );
-      print("Now on Database Page");//debug
+      print("Now on Results Page");//debug
     });
   }
   void loginPage(){

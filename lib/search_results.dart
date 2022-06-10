@@ -5,7 +5,7 @@ class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.text})
       : super(key: key);//constructor
   final String title; //attribute
-  final Map<String, dynamic>  text;
+  final Map<String, List<String>>  text;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
