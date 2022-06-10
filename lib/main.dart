@@ -9,6 +9,10 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_page.dart';
 import 'package:after_layout/after_layout.dart';
+import 'package:auth/auth.dart';
+import 'package:basic_utils/basic_utils.dart';
+import 'package:recase/recase.dart';
+import 'package:string_extensions/string_extensions.dart';
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
@@ -188,47 +192,40 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  void _filterIngredients()   {
+  void _filterIngredients() async {
     String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
     trim_ingredients = trim_ingredients.replaceAll(':', ','); //replace any semicolons with commas
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
     final len = scannedIngredients.length;
 
-    String trim_databaseIngredients = '';
-    List<String> databaseIngredients = [];
+    print(scannedIngredients);
 
-    for(var i =0; i <len; i++){
-      if(scannedIngredients[i] == "BeefMeal"){
-        print("FOUND");
-        break;
-      }
-    }
 
- //Map<String, Ingredient> map = {};
-    List<Ingredient> ing = [];
-  Ingredient value = Ingredient("", "");
+    Map<String, dynamic> filtered_ingredients = {};
+    ReCase rc_name;
 
-    //get ingredient in Firestore database
     FirebaseFirestore.instance.collection("ingredients").get()
         .then((querySnapshot) {
-        print("Successfully load all ingredients");
-        querySnapshot.docs.forEach((element) {
-
-          // map[value.name] = element.data()['name'];
-          // map[value.color] = element.data()['color'];
-          // print(map);
-
-          trim_databaseIngredients = element.data()['name']
-            .replaceAll(new RegExp(r"\s+"), ""); //delete all white space
-          databaseIngredients.add(trim_databaseIngredients);
+      print("Successfully load all ingredients");
+      querySnapshot.docs.forEach((element) {
+        //format ingredients in database to compare
+        rc_name = ReCase(element.data()['name']);
+        String cc_name = rc_name.camelCase;
+        String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
+        print(formatted_name);
+        //find where ingredients in database == scanned ingredients and store in map
+        for (var i = 0; i < len; i++) {
+          if (formatted_name == scannedIngredients[i]) {
+            print("FOUND");
+            filtered_ingredients[element.data()['name']] = element.data();
+            break;
+          }
+        }
       });
 
-      //print(databaseIngredients);
-      //find common ingredients in scannedIngredients and databaseIngredients list
-      //store common ingredients in scannedIngredients list
-      scannedIngredients.removeWhere((element) => !databaseIngredients.contains(element));
       print("Common ingredients found: ");
-      print(scannedIngredients);
+      print(filtered_ingredients.keys);
+      print(filtered_ingredients);
 
     }).catchError((error){
       print("Fail to load all ingredients");
@@ -309,11 +306,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Ingredient{
-  String name;
-  String color;
-  Ingredient(this.name, this.color);
-}
+
     // entire UI
     // return FutureBuilder(
     //     future: myFuture,
