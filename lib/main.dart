@@ -268,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState((){
       Navigator.push( //change from one screen to another
         context,
-        MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Database',
+        MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
             text: textToSend)),
       );
       print("Now on Database Page");//debug
