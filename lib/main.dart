@@ -190,21 +190,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _filterIngredients()   {
     String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
+    trim_ingredients = trim_ingredients.replaceAll(':', ','); //replace any semicolons with commas
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
     final len = scannedIngredients.length;
 
     String trim_databaseIngredients = '';
     List<String> databaseIngredients = [];
 
-    print(scannedIngredients);
     for(var i =0; i <len; i++){
-      if(scannedIngredients[i] == "Salt"){
+      if(scannedIngredients[i] == "BeefMeal"){
         print("FOUND");
         break;
       }
     }
-    // print("Size of ingredient list: $len");
-    // print(split[10]);
 
     //get ingredient in Firestore database
     FirebaseFirestore.instance.collection("ingredients").get()
@@ -214,11 +212,13 @@ class _MyHomePageState extends State<MyHomePage> {
       querySnapshot.docs.forEach((element) {
         trim_databaseIngredients = element.data()['name']
             .replaceAll(new RegExp(r"\s+"), ""); //delete all white space
-        databaseIngredients.add(trim_databaseIngredients);
-        //print(element.data());
-        //databaseIngredients = element.data()['name']; //store ingredient name in list
+        databaseIngredients.add(trim_databaseIngredients);//store ingredient name in list
       });
       print(databaseIngredients);
+      //find common ingredients in scannedIngredients and databaseIngredients list
+      //store common ingredients in scannedIngredients list
+      scannedIngredients.removeWhere((element) => !databaseIngredients.contains(element));
+      print(scannedIngredients);
 
     }).catchError((error){
       print("Fail to load all ingredients");
