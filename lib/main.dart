@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_pug/data_base.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,6 +8,7 @@ import 'dart:io';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_page.dart';
+import 'package:after_layout/after_layout.dart';
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
@@ -48,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _getIngredients(),
+        //future: _filterIngredients(),
         builder:(context, snapshot){
           return Scaffold(
             appBar: AppBar(
@@ -62,25 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ElevatedButton(
-                              onPressed: () => searchResultsPage(),
-                              child: Text(
-                                'search_page',
-                              )
-                          ),
-
-                          ElevatedButton(
-                              onPressed: () => loginPage(),
-                              child: Text(
-                                'login_page',
-                              )
-                          ),
-                          ElevatedButton(
-                              onPressed: () => databasePage(),
-                              child: Text(
-                                'data_base',
-                              )
-                          ),
                           if (textScanning) const CircularProgressIndicator(),
                           if (!textScanning && imageFile == null)
                             Container(  //Picture container
@@ -160,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ),
                                   )),
+
                             ],
                           ),
                           const SizedBox(
@@ -171,6 +155,29 @@ class _MyHomePageState extends State<MyHomePage> {
                           //     style: TextStyle(fontSize: 20),
                           //   ),
                           // )
+                          if(textScanning == false && imageFile != null)//once loading is done display buttons
+                            Column(
+                                children:<Widget>[
+                                  ElevatedButton(
+                                      onPressed: () => _filterIngredients(),
+                                      child: Text(
+                                        'search_results',
+                                      )
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () => loginPage(),
+                                      child: Text(
+                                        'login_page',
+                                      )
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () => databasePage(),
+                                      child: Text(
+                                        'data_base',
+                                      )
+                                  ),
+                                ]
+                            ),
                         ],
                       )),
                 )),
@@ -181,22 +188,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  Future<void> _getIngredients() async {
+  void _filterIngredients()   {
     String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
-    List<String> split = trim_ingredients.split(",");
-    final len = split.length;
+    List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
+    final len = scannedIngredients.length;
 
-    print(split);
+    String trim_databaseIngredients = '';
+    List<String> databaseIngredients = [];
+
+    print(scannedIngredients);
     for(var i =0; i <len; i++){
-      if(split[i] == "Salt"){
+      if(scannedIngredients[i] == "Salt"){
         print("FOUND");
-        return;
+        break;
       }
     }
-    print("hi");
-
     // print("Size of ingredient list: $len");
     // print(split[10]);
+
+    //get ingredient in Firestore database
+    FirebaseFirestore.instance.collection("ingredients").get()
+        .then((querySnapshot) {
+      print("Successfully load all ingredients");
+      //print querySnapshot
+      querySnapshot.docs.forEach((element) {
+        trim_databaseIngredients = element.data()['name']
+            .replaceAll(new RegExp(r"\s+"), ""); //delete all white space
+        databaseIngredients.add(trim_databaseIngredients);
+        //print(element.data());
+        //databaseIngredients = element.data()['name']; //store ingredient name in list
+      });
+      print(databaseIngredients);
+
+    }).catchError((error){
+      print("Fail to load all ingredients");
+      print(error);
+    });
+
+
+    //searchResultsPage();  //go to result page once finished filtering
   }
 
   void getImage(ImageSource source) async {
@@ -231,13 +261,16 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  //get test in the TextField and start search_results page
   void searchResultsPage(){
+    String textToSend = scannedText;
     setState((){
       Navigator.push( //change from one screen to another
         context,
-        MaterialPageRoute(builder: (context) => const MySearchResultsPage(title: 'search_results')),
+        MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Database',
+            text: textToSend)),
       );
-      print("Now on Search Results Page");//debug
+      print("Now on Database Page");//debug
     });
   }
   void loginPage(){

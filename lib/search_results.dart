@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class MySearchResultsPage extends StatefulWidget {
-  const MySearchResultsPage({Key? key, required this.title}) : super(key: key);//constructor
+  const MySearchResultsPage({Key? key, required this.title, required this.text})
+      : super(key: key);//constructor
   final String title; //attribute
+  final String text;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
@@ -25,8 +26,15 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,  //alignment
                     children: <Widget>[
+                      Container(  //display scanned ingredients
+                        child: Text(
+                          //widget.text,
+                          widget.title,
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
                       ElevatedButton(
-                          onPressed: (){
+                          onPressed: (){  //load data from firestore database
                             FirebaseFirestore.instance.collection("ingredients").get()
                                 .then((querySnapshot) {
                               print("Successfully load all ingredients");
