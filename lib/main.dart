@@ -204,26 +204,37 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+ //Map<String, Ingredient> map = {};
+    List<Ingredient> ing = [];
+  Ingredient value = Ingredient("", "");
+
     //get ingredient in Firestore database
     FirebaseFirestore.instance.collection("ingredients").get()
         .then((querySnapshot) {
-      print("Successfully load all ingredients");
-      //print querySnapshot
-      querySnapshot.docs.forEach((element) {
-        trim_databaseIngredients = element.data()['name']
+        print("Successfully load all ingredients");
+        querySnapshot.docs.forEach((element) {
+
+          // map[value.name] = element.data()['name'];
+          // map[value.color] = element.data()['color'];
+          // print(map);
+
+          trim_databaseIngredients = element.data()['name']
             .replaceAll(new RegExp(r"\s+"), ""); //delete all white space
-        databaseIngredients.add(trim_databaseIngredients);//store ingredient name in list
+          databaseIngredients.add(trim_databaseIngredients);
       });
-      print(databaseIngredients);
+
+      //print(databaseIngredients);
       //find common ingredients in scannedIngredients and databaseIngredients list
       //store common ingredients in scannedIngredients list
       scannedIngredients.removeWhere((element) => !databaseIngredients.contains(element));
+      print("Common ingredients found: ");
       print(scannedIngredients);
 
     }).catchError((error){
       print("Fail to load all ingredients");
       print(error);
     });
+
 
 
     //searchResultsPage();  //go to result page once finished filtering
@@ -298,6 +309,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class Ingredient{
+  String name;
+  String color;
+  Ingredient(this.name, this.color);
+}
     // entire UI
     // return FutureBuilder(
     //     future: myFuture,
