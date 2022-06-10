@@ -1,5 +1,5 @@
 # HappyPug
-In process
+In coding process
 ## General Information 
 
 ## Implementation
