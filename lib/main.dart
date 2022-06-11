@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, dynamic> filtered_ingredients = {};
   Map<String, List<String>> results = {};
 
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -162,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Column(
                                 children:<Widget>[
                                   ElevatedButton(
-                                      onPressed: () => _filterIngredients(),
+                                      onPressed: () =>  _filterIngredients(),
                                       child: Text(
                                         'search_results',
                                       )
@@ -191,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  void _filterIngredients() async {
+  Future _filterIngredients() async {
     String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
     trim_ingredients = trim_ingredients.replaceAll(':', ','); //replace any semicolons with commas
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
@@ -199,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ReCase rc_name;
 
-    FirebaseFirestore.instance.collection("ingredients").get()
+    await FirebaseFirestore.instance.collection("ingredients").get()
         .then((querySnapshot) {
       print("Successfully load all ingredients");
       querySnapshot.docs.forEach((element) {
@@ -230,6 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
    //print(filtered_ingredients.keys);
     //print(filtered_ingredients.keys);
     //print(filtered_ingredients);
+
     searchResultsPage();  //go to result page once finished filtering
   }
 
@@ -269,7 +271,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void searchResultsPage(){
     //Map<String, dynamic> textToSend = filtered_ingredients;
     Map<String, List<String>> textToSend = results;
-
     setState((){
       Navigator.push( //change from one screen to another
         context,

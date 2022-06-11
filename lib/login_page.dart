@@ -25,22 +25,45 @@ TextEditingController passwordController = TextEditingController();
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,  //alignment
           children: <Widget>[
-           TextField(
-             controller: usernameController,
-             obscureText: false,
-             decoration: InputDecoration(
-               border: OutlineInputBorder(),
-               labelText: 'Username',
-             )
-           ),
-
-            TextField(
-                controller: passwordController,
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
-                )
+            Container(
+              child: Image(
+                height: 300,
+                width: 400,
+                image: NetworkImage('https://i.pinimg.com/originals/53/cb/23/53cb231f4c04ae30a04a6e292eb2a48c.jpg')
+              ),
+            ),
+           // Expanded(  //maximum space you can use
+           //   child:  TextField(
+           //     controller: usernameController,
+           //     obscureText: false,
+           //     decoration: InputDecoration(
+           //       border: OutlineInputBorder(),
+           //       labelText: 'Username',
+           //     )
+           // )),
+           //
+            Container(
+              width: 350,
+              height: 60,
+              child: TextField(
+                  controller: usernameController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Username',
+                  )
+              )
+            ),
+            Container(
+              width: 350,
+              child:  TextField(
+                  controller: passwordController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                  )
+              ),
             ),
 
             ElevatedButton(
