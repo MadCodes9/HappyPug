@@ -40,7 +40,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               ),
                Expanded(
                  child: Text(
-                   "Good",
+                  "${widget.text.keys.length} Good",
                    style: TextStyle(fontSize: 20),
                  ),
                  flex: 5,
@@ -52,7 +52,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                ),
                Expanded(
                  child: Text(
-                   "Bad",
+                   "${widget.text.values.elementAt(0).elementAt(1)} Bad",
                    style: TextStyle(fontSize: 20),
                  ),
                  flex: 20,
