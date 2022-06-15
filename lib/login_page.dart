@@ -17,7 +17,6 @@ TextEditingController passwordController = TextEditingController();
   Widget build(BuildContext context) {  //entire UI
     return Scaffold(    //default UI
       appBar: AppBar(
-
         title: Text(widget.title),
       ),
       body: Center(
@@ -25,10 +24,17 @@ TextEditingController passwordController = TextEditingController();
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,  //alignment
           children: <Widget>[
+            // Expanded( //expand layout giving rest of layout minimum space
+            //   flex: 25,  //percentage of how much layout is expanded
+            //     child:Text("Title 1"),
+            // ),
+            // Expanded(
+            //   flex: 12, //percentage of weight to the widget
+            //     child: Text("Hello")),
             Container(
               child: Image(
                 height: 300,
-                width: 400,
+                width: 300,
                 image: NetworkImage('https://i.pinimg.com/originals/53/cb/23/53cb231f4c04ae30a04a6e292eb2a48c.jpg')
               ),
             ),
@@ -43,8 +49,10 @@ TextEditingController passwordController = TextEditingController();
            // )),
            //
             Container(
-              width: 350,
-              height: 60,
+              //alignment: Alignment.centerLeft,
+              width: 360,
+              //margin: EdgeInsets.all(10),
+             // margin: EdgeInsets.only(top: 30, bottom: 20),
               child: TextField(
                   controller: usernameController,
                   obscureText: false,
@@ -55,7 +63,8 @@ TextEditingController passwordController = TextEditingController();
               )
             ),
             Container(
-              width: 350,
+              //alignment: Alignment.center,
+              width: 360,
               child:  TextField(
                   controller: passwordController,
                   obscureText: false,

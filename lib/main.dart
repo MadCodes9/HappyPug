@@ -112,7 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         ],
                                       ),
                                     ),
-                                  )),
+                                  )
+                              ),
                               Container(  //Camera button
                                   margin: const EdgeInsets.symmetric(horizontal: 5),
                                   padding: const EdgeInsets.only(top: 10),
@@ -162,23 +163,31 @@ class _MyHomePageState extends State<MyHomePage> {
                           if(textScanning == false && imageFile != null)//once loading is done display buttons
                             Column(
                                 children:<Widget>[
-                                  ElevatedButton(
-                                      onPressed: () =>  _filterIngredients(),
-                                      child: Text(
-                                        'search_results',
-                                      )
+                                  Container(
+
+                                    child:  ElevatedButton(
+                                        onPressed: () =>  _filterIngredients(),
+                                        child: Text(
+                                          'search_results',
+                                        )
+                                    ),
                                   ),
-                                  ElevatedButton(
-                                      onPressed: () => loginPage(),
-                                      child: Text(
-                                        'login_page',
-                                      )
-                                  ),
-                                  ElevatedButton(
-                                      onPressed: () => databasePage(),
-                                      child: Text(
-                                        'data_base',
-                                      )
+                                 Container(
+                                   child:
+                                   ElevatedButton(
+                                       onPressed: () => loginPage(),
+                                       child: Text(
+                                         'login_page',
+                                       )
+                                   ),
+                                 ),
+                                  Container(
+                                    child: ElevatedButton(
+                                        onPressed: () => databasePage(),
+                                        child: Text(
+                                          'data_base',
+                                        )
+                                    ),
                                   ),
                                 ]
                             ),
