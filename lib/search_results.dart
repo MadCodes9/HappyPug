@@ -34,7 +34,10 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
            Row(
              mainAxisAlignment: MainAxisAlignment.center,
              children: [
-            
+              Icon(
+                Icons.check_rounded,
+                color: Colors.lightGreen,
+              ),
                Expanded(
                  child: Text(
                    "Good",
@@ -42,6 +45,10 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                  ),
                  flex: 5,
 
+               ),
+               Icon(
+                 Icons.close,
+                 color: Colors.red,
                ),
                Expanded(
                  child: Text(
