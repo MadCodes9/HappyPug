@@ -30,9 +30,28 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 width: 200,
                 image: NetworkImage('https://i.pinimg.com/originals/53/cb/23/53cb231f4c04ae30a04a6e292eb2a48c.jpg'),
               ),
-              
             ),
-           
+           Row(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+            
+               Expanded(
+                 child: Text(
+                   "Good",
+                   style: TextStyle(fontSize: 20),
+                 ),
+                 flex: 5,
+
+               ),
+               Expanded(
+                 child: Text(
+                   "Bad",
+                   style: TextStyle(fontSize: 20),
+                 ),
+                 flex: 20,
+               ),
+             ],
+           ),
 
             Container(
               child: Text(
