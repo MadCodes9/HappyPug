@@ -49,23 +49,35 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   ),
                   Expanded(
                     child: Text(
-                      "${widget.numOfgreenIngred} Good",
-                      style: TextStyle(fontSize: 20),
+                      "${widget.numOfgreenIngred} Healthy",
+                      style: TextStyle(fontSize: 15),
                     ),
-                    flex: 5,
+                    flex: 0,
 
                   ),
                   Icon(
-                    Icons.close,
+                    Icons.warning_amber_rounded,
+                    color: Colors.yellow,
+                  ),
+                  Expanded(
+                    child: Text(
+                      "${widget.numOfyellowIngred} Caution",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    flex: 0,
+
+                  ),
+                  Icon(
+                    Icons.close_rounded,
                     color: Colors.red,
                   ),
                   Expanded(
                     child: Text(
                       //"${widget.text.values.elementAt(0).elementAt(1)} Bad",
-                      "${widget.numOfredIngred} Bad",
-                      style: TextStyle(fontSize: 20),
+                      "${widget.numOfredIngred} Unhealthy",
+                      style: TextStyle(fontSize: 15),
                     ),
-                    flex: 20,
+                    //flex: 0,
                   ),
                 ],
               ),
