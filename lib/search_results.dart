@@ -10,6 +10,7 @@ class MySearchResultsPage extends StatefulWidget {
   final int numOfgreenIngred;
   final int numOfredIngred;
   final int  numOfyellowIngred;
+  final call = null;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
@@ -101,9 +102,9 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     label: Text("Ingredients", style: TextStyle(color: Colors.black,
                     fontSize: 15)),
                     onPressed: (){
-                      setButtons();//Access widget attributes
                       showText(); //Controls visibility
                     },
+
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.grey,
@@ -126,19 +127,18 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                           onPressed: (){  //show description, rating
                             print(ingredient);
                             Text("Description ");
-                            setButtonColor(ingredient);//dynamically set background color
+                            //setButtonColor(ingredient);//dynamically set background color
                             print(results[ingredient]?.elementAt(0));},
+
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
                             fixedSize: MaterialStateProperty.all(Size.fromWidth(340)),
                           ),
-                          label:
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              ingredient,
-                              style: TextStyle(color: Colors.white, fontSize: 15),
-                            ),
+
+                          label: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(ingredient, style: TextStyle(color: Colors.white,
+                                  fontSize: 15))
                           ),
                           icon: Icon(
                               Icons.arrow_drop_down,
@@ -197,25 +197,34 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     );
   }
 
+  @override
+  void initState(){
+    super.initState();
+    setButtons(); //Access widget attributes
+    setButtonColor();
+  }
+
   void setButtons() {
       results = widget.foundIngred;
       keys = widget.foundIngred.keys.toList();
   }
-  void setButtonColor(String ingredient){
-    setState(() {
-      if(results[ingredient]?.elementAt(1) == "green"){
-        btnColor[ingredient] = Colors.green;
+
+  //store ingredient name and color pair in Map to set the color of the dynamic buttons
+  void setButtonColor(){
+    for(var i = 0; i < keys.length; i++){
+      if(results.values.elementAt(i).elementAt(1) == "green"){
+        btnColor[keys[i]] = Colors.green;
       }
-      else if (results[ingredient]?.elementAt(1) == "yellow"){
-        btnColor[ingredient] = Colors.yellow;
+      else if (results.values.elementAt(i).elementAt(1) == "yellow"){
+        btnColor[keys[i]] = Colors.yellow;
       }
-      else if (results[ingredient]?.elementAt(1) == "red"){
-        btnColor[ingredient] = Colors.red;
+      else if (results.values.elementAt(i).elementAt(1) == "red"){
+        btnColor[keys[i]] = Colors.red;
       }
       else{
-        btnColor[ingredient] = Colors.lightBlueAccent;
+        btnColor[keys[i]] = Colors.lightBlueAccent;
       }
-    });
+    }
   }
   void showText(){
     setState((){
