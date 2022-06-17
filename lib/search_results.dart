@@ -19,9 +19,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
   bool _isVisible = false;
-  bool _isGreen = false;
-  bool _isYellow = false;
-  bool _isRed = false;
   final Map<String,Color> btnColor = {};
 
   @override
@@ -103,41 +100,57 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   child: TextButton.icon(
                     label: Text("Ingredients", style: TextStyle(color: Colors.black,
                     fontSize: 15)),
-                    icon: Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.grey,
-                    ),
                     onPressed: (){
                       setButtons();//Access widget attributes
                       showText(); //Controls visibility
                     },
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ],
             ),
 
-            Visibility( //show ingredients
-              visible: _isVisible,
-              child: Column( //dynamically display ingredients
-                  children:
-                  keys.map((String ingredient) => TextButton.icon(
-                    onPressed: (){  //show description, rating
-                          print(ingredient);
-                          Text("Description ");
-                          setButtonColor(ingredient);//dynamically set background color
-                          print(results[ingredient]?.elementAt(0));},
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(btnColor[ingredient])),
-                    label: Text(
-                      ingredient,
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+            Expanded(
+                child: Align(
+                  alignment: Alignment.center,
+                  child:
+                  Visibility( //show ingredients
+                    visible: _isVisible,
+                    child: Column(//dynamically display ingredients
+                        children:
+                        keys.map((String ingredient) => TextButton.icon(
+
+                          onPressed: (){  //show description, rating
+                            print(ingredient);
+                            Text("Description ");
+                            setButtonColor(ingredient);//dynamically set background color
+                            print(results[ingredient]?.elementAt(0));},
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
+                            fixedSize: MaterialStateProperty.all(Size.fromWidth(340)),
+                          ),
+                          label:
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              ingredient,
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                          icon: Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.black54
+                          ),
+                        )).toList()
                     ),
-                    icon: Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.black54
-                    ),
-                  )).toList()
-              ),
+                  ),
+                ),
+
             ),
+
 
 
             // Container(
