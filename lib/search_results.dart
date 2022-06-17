@@ -114,20 +114,24 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               ],
             ),
 
+
+
             Expanded(
-                child: Align(
-                  alignment: Alignment.center,
+              child: Align(
+                alignment: Alignment.center,
+                child:
+                Visibility( //show and hide ingredients
+                  visible: _isVisible,
                   child:
-                  Visibility( //show ingredients
-                    visible: _isVisible,
-                    child: Column(//dynamically display ingredients
+                  SingleChildScrollView(//scrollable content
+                    child:
+                    Column(  //dynamically display ingredients
+                        mainAxisSize: MainAxisSize.min,
                         children:
                         keys.map((String ingredient) => TextButton.icon(
-
                           onPressed: (){  //show description, rating
                             print(ingredient);
                             Text("Description ");
-                            //setButtonColor(ingredient);//dynamically set background color
                             print(results[ingredient]?.elementAt(0));},
 
                           style: ButtonStyle(
@@ -147,10 +151,48 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                         )).toList()
                     ),
                   ),
+
                 ),
+              ),
 
             ),
 
+
+            //
+            // Expanded(
+            //   child: Align(
+            //     alignment: Alignment.center,
+            //     child:
+            //     Visibility( //show ingredients
+            //       visible: _isVisible,
+            //       child: Column(//dynamically display ingredients
+            //           children:
+            //           keys.map((String ingredient) => TextButton.icon(
+            //             onPressed: (){  //show description, rating
+            //               print(ingredient);
+            //               Text("Description ");
+            //               print(results[ingredient]?.elementAt(0));},
+            //
+            //             style: ButtonStyle(
+            //               backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
+            //               fixedSize: MaterialStateProperty.all(Size.fromWidth(340)),
+            //             ),
+            //
+            //             label: Align(
+            //                 alignment: Alignment.topLeft,
+            //                 child: Text(ingredient, style: TextStyle(color: Colors.white,
+            //                     fontSize: 15))
+            //             ),
+            //             icon: Icon(
+            //                 Icons.arrow_drop_down,
+            //                 color: Colors.black54
+            //             ),
+            //           )).toList()
+            //       ),
+            //     ),
+            //   ),
+            //
+            // ),
 
 
             // Container(
@@ -201,9 +243,12 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   void initState(){
     super.initState();
     setButtons(); //Access widget attributes
-    setButtonColor();
+    setButtonColor();//dynamically set background color
   }
 
+  void buildCard(int ind){
+
+  }
   void setButtons() {
       results = widget.foundIngred;
       keys = widget.foundIngred.keys.toList();
