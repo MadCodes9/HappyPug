@@ -18,7 +18,11 @@ class MySearchResultsPage extends StatefulWidget {
 class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
-  bool _isVisible = true;
+  bool _isVisible = false;
+  bool _isGreen = false;
+  bool _isYellow = false;
+  bool _isRed = false;
+  final Map<String,Color> btnColor = {};
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 Expanded(
                   child: Text(
                     "${widget.numOfgreenIngred} Healthy",
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(color: Colors.black, fontSize: 15),
                   ),
                   flex: 0,
 
@@ -59,7 +63,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 Expanded(
                   child: Text(
                     "${widget.numOfyellowIngred} Caution",
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(color: Colors.black, fontSize: 15),
                   ),
                   flex: 0,
 
@@ -72,7 +76,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   child: Text(
                     //"${widget.text.values.elementAt(0).elementAt(1)} Bad",
                     "${widget.numOfredIngred} Unhealthy",
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(color: Colors.black, fontSize: 15),
                   ),
                   //flex: 0,
                 ),
@@ -83,7 +87,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               children: [
                 ButtonTheme(
                   child: TextButton.icon(
-                    label: Text("Overall", style: TextStyle(color: Colors.black)),
+                    label: Text("Overall", style: TextStyle(color: Colors.black,
+                    fontSize: 15)),
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.grey,
@@ -94,36 +99,43 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   ),
                 ),
 
-
                 ButtonTheme(
                   child: TextButton.icon(
-                    label: Text("Ingredients", style: TextStyle(color: Colors.black)),
+                    label: Text("Ingredients", style: TextStyle(color: Colors.black,
+                    fontSize: 15)),
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.grey,
                     ),
                     onPressed: (){
-                      dynamicButtons();
-                      showText();
+                      setButtons();//Access widget attributes
+                      showText(); //Controls visibility
                     },
                   ),
                 ),
               ],
             ),
 
-            Visibility(
+            Visibility( //show ingredients
               visible: _isVisible,
-              child: Column(
+              child: Column( //dynamically display ingredients
                   children:
-                  keys.map((String data) => TextButton.icon(
-                    onPressed: (){print(data);},
-                    label: Text(data),
+                  keys.map((String ingredient) => TextButton.icon(
+                    onPressed: (){  //show description, rating
+                          print(ingredient);
+                          Text("Description ");
+                          setButtonColor(ingredient);//dynamically set background color
+                          print(results[ingredient]?.elementAt(0));},
+                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(btnColor[ingredient])),
+                    label: Text(
+                      ingredient,
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
                     icon: Icon(
-                        Icons.arrow_drop_down_circle_rounded,
+                        Icons.arrow_drop_down,
                         color: Colors.grey
                     ),
-                  )
-                  ).toList()
+                  )).toList()
               ),
             ),
 
@@ -172,11 +184,26 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     );
   }
 
-  void dynamicButtons() {
-      results = widget.foundIngred; //can access results
+  void setButtons() {
+      results = widget.foundIngred;
       keys = widget.foundIngred.keys.toList();
-    }
-
+  }
+  void setButtonColor(String ingredient){
+    setState(() {
+      if(results[ingredient]?.elementAt(1) == "green"){
+        btnColor[ingredient] = Colors.green;
+      }
+      else if (results[ingredient]?.elementAt(1) == "yellow"){
+        btnColor[ingredient] = Colors.yellow;
+      }
+      else if (results[ingredient]?.elementAt(1) == "red"){
+        btnColor[ingredient] = Colors.red;
+      }
+      else{
+        btnColor[ingredient] = Colors.lightBlueAccent;
+      }
+    });
+  }
   void showText(){
     setState((){
       _isVisible = !_isVisible;
