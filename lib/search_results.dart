@@ -14,9 +14,9 @@ class MySearchResultsPage extends StatefulWidget {
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
 }
+
 class _MySearchResultsState extends State<MySearchResultsPage> {
   String foundLength = "";
-
   
   @override
   Widget build(BuildContext context) {
@@ -79,6 +79,29 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     ),
                     //flex: 0,
                   ),
+                ],
+              ),
+
+              Row(
+               // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ButtonTheme(
+                    child: MaterialButton(
+                      onPressed: (){
+
+                      },
+                      child: Text("Overall"),
+                    ),
+                  ),
+                  ButtonTheme(
+                    child: MaterialButton(
+                      onPressed: (){
+
+                      },
+                      child: Text("Ingredients"),
+                    ),
+                  ),
+
                 ],
               ),
 
