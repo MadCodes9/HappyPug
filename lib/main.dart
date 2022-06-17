@@ -49,6 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
   String scannedText = "";
   Map<String, dynamic> filtered_ingredients = {};
   Map<String, List<String>> results = {};
+  String greenIngred = "";
+  String redIngred = "";
+  String yellowIngred = "";
+  int numOfGreenIngred = 0;
+  int numOfRedIngred = 0;
+  int numOfYellowIngred = 0;
 
 
   @override
@@ -200,6 +206,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
   }
+  void reset(){ //reset all counters
+    numOfGreenIngred = 0;
+    numOfRedIngred = 0;
+    numOfYellowIngred = 0;
+  }
+  void getGreenIngredients(){
+    for(var i = 0; i < results.keys.length; i++){
+      if(results.values.elementAt(i).elementAt(1) == "green"){//if name.color == green
+        greenIngred = results.values.elementAt(i).elementAt(1);
+        numOfGreenIngred++;
+        print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
+      }
+    }
+
+  }
+  void getRedIngredients(){
+    for(var i = 0; i < results.keys.length; i++){
+      if(results.values.elementAt(i).elementAt(1) == "red"){//if name.color == red
+        redIngred =  results.values.elementAt(i).elementAt(1);
+        numOfRedIngred++;
+        print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
+      }
+    }
+  }
+  void getYellowIngredients(){
+    for(var i = 0; i < results.keys.length; i++){
+      if(results.values.elementAt(i).elementAt(1) == "yellow"){//if name.color == yellow
+        yellowIngred = results.values.elementAt(i).elementAt(1);
+        numOfYellowIngred++;
+        print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
+      }
+    }
+  }
 
   Future _filterIngredients() async {
     String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
@@ -208,7 +247,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final len = scannedIngredients.length;
 
     ReCase rc_name;
-
     await FirebaseFirestore.instance.collection("ingredients").get()
         .then((querySnapshot) {
       print("Successfully load all ingredients");
@@ -221,8 +259,6 @@ class _MyHomePageState extends State<MyHomePage> {
         //find where ingredients in database == scanned ingredients and store in map
         for (var i = 0; i < len; i++) {
           if (formatted_name == scannedIngredients[i]) {
-            print("FOUND");
-            //filtered_ingredients[element.data()['name']] = element.data();
             //Add name as key and fields as value
              results[element.data()['name']] = [element.data()['description'],
              element.data()['color'], element.data()['label']];
@@ -237,10 +273,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print("Common ingredients found: ");
     print(results.keys);
-   //print(filtered_ingredients.keys);
-    //print(filtered_ingredients.keys);
-    //print(filtered_ingredients);
-
+    getGreenIngredients();  //fliter ingredients by color
+    getRedIngredients();
+    getYellowIngredients();
     searchResultsPage();  //go to result page once finished filtering
   }
 
@@ -284,7 +319,9 @@ class _MyHomePageState extends State<MyHomePage> {
       Navigator.push( //change from one screen to another
         context,
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
-            text: textToSend)),
+            foundIngred: textToSend, numOfgreenIngred: numOfGreenIngred,
+            numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,)
+        ),
       );
       print("Now on Results Page");//debug
     });

@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MySearchResultsPage extends StatefulWidget {
-  const MySearchResultsPage({Key? key, required this.title, required this.text})
+  const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
+  required this.numOfgreenIngred, required this.numOfredIngred, required this.numOfyellowIngred})
       : super(key: key);//constructor
   final String title; //attribute
-  final Map<String, List<String>>  text;
+  final Map<String, List<String>> foundIngred;
+  final int numOfgreenIngred;
+  final int numOfredIngred;
+  final int  numOfyellowIngred;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
 }
-
 class _MySearchResultsState extends State<MySearchResultsPage> {
+  String foundLength = "";
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +28,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       body: Column(
 
           children: <Widget>[
+
             Container(
               margin: EdgeInsets.all(5),
               alignment: Alignment.centerLeft,
@@ -40,7 +47,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               ),
                Expanded(
                  child: Text(
-                  "${widget.text.keys.length} Good",
+                   "${widget.numOfgreenIngred} Good",
                    style: TextStyle(fontSize: 20),
                  ),
                  flex: 5,
@@ -52,7 +59,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                ),
                Expanded(
                  child: Text(
-                   "${widget.text.values.elementAt(0).elementAt(1)} Bad",
+                   //"${widget.text.values.elementAt(0).elementAt(1)} Bad",
+                   "${widget.numOfredIngred} Bad",
                    style: TextStyle(fontSize: 20),
                  ),
                  flex: 20,
@@ -62,7 +70,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
             Container(
               child: Text(
-                "Ingredients Found: ${widget.text.keys}", //From home screen
+                "Ingredients Found: ${widget.foundIngred.keys}", //From home screen
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -88,4 +96,3 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     );
   }
 }
-
