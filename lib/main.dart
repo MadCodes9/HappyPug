@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_pug/data_base.dart';
@@ -59,157 +61,151 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        //future: _filterIngredients(),
-        builder:(context, snapshot){
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: const Text("Text Recognition example"),
-            ),
-            body: Center(
-                child: SingleChildScrollView(
-                  child: Container(
-                      margin: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (textScanning) const CircularProgressIndicator(),
-                          if (!textScanning && imageFile == null)
-                            Container(  //Picture container
-                              width: 300,
-                              height: 300,
-                              color: Colors.grey[300]!,
-                            ),
-                          if (imageFile != null) Image.file(File(imageFile!.path)),
-                          Row(  //UI
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(  //Gallery button
-                                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.white,
-                                      onPrimary: Colors.grey,
-                                      shadowColor: Colors.grey[400],
-                                      elevation: 10,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8.0)),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Text Recognition example"),
+      ),
+      body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+                margin: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (textScanning) const CircularProgressIndicator(),
+                    if (!textScanning && imageFile == null)
+                      Container(  //Picture container
+                        width: 300,
+                        height: 300,
+                        color: Colors.grey[300]!,
+                      ),
+                    if (imageFile != null) Image.file(File(imageFile!.path)),
+                    Row(  //UI
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(  //Gallery button
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.only(top: 10),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.grey,
+                                shadowColor: Colors.grey[400],
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0)),
+                              ),
+                              onPressed: () {
+                                getImage(ImageSource.gallery);
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.image,
+                                      size: 30,
                                     ),
-                                    onPressed: () {
-                                      getImage(ImageSource.gallery);
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 5, horizontal: 5),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.image,
-                                            size: 30,
-                                          ),
-                                          Text(
-                                            "Gallery",
-                                            style: TextStyle(
-                                                fontSize: 13, color: Colors.grey[600]),
-                                          )
-                                        ],
-                                      ),
+                                    Text(
+                                      "Gallery",
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.grey[600]),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                        ),
+                        Container(  //Camera button
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.only(top: 10),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.grey,
+                                shadowColor: Colors.grey[400],
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0)),
+                              ),
+                              onPressed: () {
+                                getImage(ImageSource.camera);
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt,
+                                      size: 30,
                                     ),
+                                    Text(
+                                      "Camera",
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.grey[600]),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )),
+
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    // Container(  //display results
+                    //   child: Text(
+                    //     scannedText,
+                    //     style: TextStyle(fontSize: 20),
+                    //   ),
+                    // )
+                    if(textScanning == false && imageFile != null)//once loading is done display buttons
+                      Column(
+                          children:<Widget>[
+                            Container(
+
+                              child:  ElevatedButton(
+                                  onPressed: () =>  _filterIngredients(),
+                                  child: Text(
+                                    'search_results',
                                   )
                               ),
-                              Container(  //Camera button
-                                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.white,
-                                      onPrimary: Colors.grey,
-                                      shadowColor: Colors.grey[400],
-                                      elevation: 10,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8.0)),
-                                    ),
-                                    onPressed: () {
-                                      getImage(ImageSource.camera);
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 5, horizontal: 5),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.camera_alt,
-                                            size: 30,
-                                          ),
-                                          Text(
-                                            "Camera",
-                                            style: TextStyle(
-                                                fontSize: 13, color: Colors.grey[600]),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          // Container(  //display results
-                          //   child: Text(
-                          //     scannedText,
-                          //     style: TextStyle(fontSize: 20),
-                          //   ),
-                          // )
-                          if(textScanning == false && imageFile != null)//once loading is done display buttons
-                            Column(
-                                children:<Widget>[
-                                  Container(
-
-                                    child:  ElevatedButton(
-                                        onPressed: () =>  _filterIngredients(),
-                                        child: Text(
-                                          'search_results',
-                                        )
-                                    ),
-                                  ),
-                                 Container(
-                                   child:
-                                   ElevatedButton(
-                                       onPressed: () => loginPage(),
-                                       child: Text(
-                                         'login_page',
-                                       )
-                                   ),
-                                 ),
-                                  Container(
-                                    child: ElevatedButton(
-                                        onPressed: () => databasePage(),
-                                        child: Text(
-                                          'data_base',
-                                        )
-                                    ),
-                                  ),
-                                ]
                             ),
-                        ],
-                      )),
+                            Container(
+                              child:
+                              ElevatedButton(
+                                  onPressed: () => loginPage(),
+                                  child: Text(
+                                    'login_page',
+                                  )
+                              ),
+                            ),
+                            Container(
+                              child: ElevatedButton(
+                                  onPressed: () => databasePage(),
+                                  child: Text(
+                                    'data_base',
+                                  )
+                              ),
+                            ),
+                          ]
+                      ),
+                  ],
                 )),
-          );
-
-      }
+          )),
     );
-
   }
-  void reset(){ //reset all counters
+  FutureOr reset(){ //reset all counters
     numOfGreenIngred = 0;
     numOfRedIngred = 0;
     numOfYellowIngred = 0;
+    setState((){});
   }
   void getGreenIngredients(){
     for(var i = 0; i < results.keys.length; i++){
@@ -311,18 +307,17 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //get test in the TextField and start search_results page
+  //sends filtered data to search page and resets counters
   void searchResultsPage(){
-    //Map<String, dynamic> textToSend = filtered_ingredients;
-    Map<String, List<String>> textToSend = results;
+    //Map<String, List<String>> textToSend = results;
     setState((){
       Navigator.push( //change from one screen to another
         context,
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
-            foundIngred: textToSend, numOfgreenIngred: numOfGreenIngred,
+            foundIngred: results, numOfgreenIngred: numOfGreenIngred,
             numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,)
         ),
-      );
+      ).then((value) => reset());
       print("Now on Results Page");//debug
     });
   }
