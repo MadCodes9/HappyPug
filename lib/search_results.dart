@@ -133,7 +133,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     ),
                     icon: Icon(
                         Icons.arrow_drop_down,
-                        color: Colors.grey
+                        color: Colors.black54
                     ),
                   )).toList()
               ),
