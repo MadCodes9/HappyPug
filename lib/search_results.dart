@@ -124,6 +124,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   visible: _isVisible,
                   child:
                   SingleChildScrollView(//scrollable content
+                    padding: EdgeInsets.all(8.0),
+                    scrollDirection: Axis.vertical,
                     child:
                     Column(  //dynamically display ingredients
                         mainAxisSize: MainAxisSize.min,
@@ -136,7 +138,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
-                            fixedSize: MaterialStateProperty.all(Size.fromWidth(340)),
+                            fixedSize: MaterialStateProperty.all(Size.fromWidth(350)),
                           ),
 
                           label: Align(
