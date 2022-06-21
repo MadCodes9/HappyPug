@@ -153,7 +153,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                             )),
-
                       ],
                     ),
                     const SizedBox(
@@ -315,7 +314,8 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
             foundIngred: results, numOfgreenIngred: numOfGreenIngred,
-            numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,)
+            numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
+            scannedImage: Image.file(File(imageFile!.path)) )
         ),
       ).then((value) => reset());
       print("Now on Results Page");//debug

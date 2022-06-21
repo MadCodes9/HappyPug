@@ -4,13 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
-  required this.numOfgreenIngred, required this.numOfredIngred, required this.numOfyellowIngred})
+  required this.numOfgreenIngred, required this.numOfredIngred, required this.numOfyellowIngred,
+  required this.scannedImage})
       : super(key: key);//constructor
   final String title; //attribute
   final Map<String, List<String>> foundIngred;
   final int numOfgreenIngred;
   final int numOfredIngred;
   final int  numOfyellowIngred;
+  final Image scannedImage;
   final call = null;
 
   @override
@@ -20,6 +22,7 @@ class MySearchResultsPage extends StatefulWidget {
 class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
+
   bool _isVisible = false;
   bool pressed1 = true;
   bool pressed2 = true;
@@ -30,21 +33,31 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        backgroundColor: Colors.pink[300],
         title: Text(widget.title),
       ),
       body: Column(
           children: <Widget>[
             Container(
               margin: EdgeInsets.all(5),
-              alignment: Alignment.centerLeft,
-              child: Image(
-                height: 200,
-                width: 200,
-                image: NetworkImage('https://i.pinimg.com/originals/53/cb/23/53cb231f4c04ae30a04a6e292eb2a48c.jpg'),
-              ),
+              alignment: Alignment.topLeft,
+              height: 200,
+              width: 400,
+              child: widget.scannedImage,
             ),
+            // Container(
+            //
+            //
+            //   child:
+            //
+            //   // Image(
+            //   //   height: 200,
+            //   //   width: 200,
+            //   //  // image: NetworkImage('https://i.pinimg.com/originals/53/cb/23/53cb231f4c04ae30a04a6e292eb2a48c.jpg'),
+            //   // ),
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -91,10 +104,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               children: [
                 ButtonTheme(
                   child: TextButton.icon(
-                    label: Text(
-                        "Analysis",
-                        style: TextStyle(color: Colors.black, fontSize: 15 * textScale,fontWeight: FontWeight.bold)
-                    ),
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.grey,
@@ -108,13 +117,28 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     },
                     style: pressed1 //Analysis btn decoration on press
                     ?TextButton.styleFrom(
+                      shape: BeveledRectangleBorder(),
                       primary: Colors.white,
                       backgroundColor: Colors.white,
                     ): TextButton.styleFrom(
                       shape: BeveledRectangleBorder(),
                       primary: Colors.transparent,
-                      backgroundColor: Colors.grey[100],
-                    )
+                      backgroundColor: Colors.pink[300],
+                    ),
+                    label: Text(
+                        "Analysis",
+                        style: pressed1
+                        ?TextStyle(
+                            color: Colors.black,
+                            fontSize: 15 * textScale,
+                            fontWeight: FontWeight.bold
+                        ): TextStyle(
+                            color: Colors.white,
+                            fontSize: 15 * textScale,
+                            fontWeight: FontWeight.bold,
+                        )
+                    ),
+
                   ),
                 ),
 
@@ -134,12 +158,13 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     },
                     style: pressed2 //Ingredients btn decoration on press
                         ?TextButton.styleFrom(
+                      shape: BeveledRectangleBorder(),
                       primary: Colors.white,
                       backgroundColor: Colors.white,
                     ): TextButton.styleFrom(
                       shape: BeveledRectangleBorder(),
                       primary: Colors.transparent,
-                      backgroundColor: Colors.grey[100],
+                      backgroundColor: Colors.pink[50],
                     ),
 
                     icon: Icon(
@@ -274,65 +299,28 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
             ),
 
+
+
+
+
             //
-            // Visibility(
-            //   visible: _isVisible2,
-            //   child: Container(
-            //     margin: EdgeInsets.all(5),
-            //     alignment: Alignment.center,
-            //     child:  AlertDialog(
-            //       content: SingleChildScrollView(
-            //         child: ListBody(
-            //
-            //           children: [
-            //             Text("hello there")
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-
-
-            // Container(
-            //   child:
-            //   pressed1 ? null:null,
-            // ),
-            // Container(
-            //   child: Column(
-            //     children: [
-            //       //Text("Ingredients Found: ${widget.foundIngred.keys}")
-            //       pressed2 ? Column(
-            //        children:
-            //         keys.map((String data) => TextButton.icon(
-            //             onPressed: (){print(data);},
-            //             label: Text(data),
-            //             icon: Icon(
-            //               Icons.arrow_drop_down_circle_rounded,
-            //               color: Colors.grey,
-            //             ),
-            //         )).toList(),):SizedBox()
-            //     ]
-            //   ),
-            // ),
-
-            ElevatedButton(
-                onPressed: (){  //load data from firestore database
-                  FirebaseFirestore.instance.collection("ingredients").get()
-                      .then((querySnapshot) {
-                    print("Successfully load all ingredients");
-                    //print querySnapshot
-                    querySnapshot.docs.forEach((element) {
-                      //print(element.data());
-                      print(element.data()['name']);
-                    });
-                  }).catchError((error){
-                    print("Fail to load all ingredients");
-                    print(error);
-                  });
-                },
-                child: Text("List all ingredients")
-            )
+            // ElevatedButton(
+            //     onPressed: (){  //load data from firestore database
+            //       FirebaseFirestore.instance.collection("ingredients").get()
+            //           .then((querySnapshot) {
+            //         print("Successfully load all ingredients");
+            //         //print querySnapshot
+            //         querySnapshot.docs.forEach((element) {
+            //           //print(element.data());
+            //           print(element.data()['name']);
+            //         });
+            //       }).catchError((error){
+            //         print("Fail to load all ingredients");
+            //         print(error);
+            //       });
+            //     },
+            //     child: Text("List all ingredients")
+            // )
           ]
       ),
     );
