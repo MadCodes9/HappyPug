@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
@@ -20,12 +21,16 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
   bool _isVisible = false;
+  bool pressed1 = true;
+  bool pressed2 = true;
   Text rating = Text("");
   final Map<String,Color> btnColor = {};
 
   @override
   Widget build(BuildContext context) {
+    final textScale = MediaQuery.of(context).textScaleFactor;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -50,7 +55,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 Expanded(
                   child: Text(
                     "${widget.numOfgreenIngred} Healthy",
-                    style: TextStyle(color: Colors.black, fontSize: 15),
+                    style: TextStyle(color: Colors.black, fontSize: 15 * textScale),
                   ),
                   flex: 0,
 
@@ -62,7 +67,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 Expanded(
                   child: Text(
                     "${widget.numOfyellowIngred} Caution",
-                    style: TextStyle(color: Colors.black, fontSize: 15),
+                    style: TextStyle(color: Colors.black, fontSize: 15 * textScale),
                   ),
                   flex: 0,
 
@@ -75,7 +80,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   child: Text(
                     //"${widget.text.values.elementAt(0).elementAt(1)} Bad",
                     "${widget.numOfredIngred} Unhealthy",
-                    style: TextStyle(color: Colors.black, fontSize: 15),
+                    style: TextStyle(color: Colors.black, fontSize: 15 * textScale),
                   ),
                   //flex: 0,
                 ),
@@ -86,25 +91,56 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               children: [
                 ButtonTheme(
                   child: TextButton.icon(
-                    label: Text("Analysis", style: TextStyle(color: Colors.black,
-                    fontSize: 15)),
+                    label: Text(
+                        "Analysis",
+                        style: TextStyle(color: Colors.black, fontSize: 15 * textScale,fontWeight: FontWeight.bold)
+                    ),
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.grey,
                     ),
                     onPressed: (){
-
+                      setState((){
+                        pressed1 = !pressed1;
+                        _isVisible = false;
+                      });
+                      pressed2 = true;
                     },
+                    style: pressed1 //Analysis btn decoration on press
+                    ?TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Colors.white,
+                    ): TextButton.styleFrom(
+                      shape: BeveledRectangleBorder(),
+                      primary: Colors.transparent,
+                      backgroundColor: Colors.grey[100],
+                    )
                   ),
                 ),
 
                 ButtonTheme(
                   child: TextButton.icon(
-                    label: Text("Ingredients", style: TextStyle(color: Colors.black,
-                    fontSize: 15)),
+                    label: Text(
+                        "Ingredients",
+                        style:
+                        TextStyle(color: Colors.black, fontSize: 15 * textScale, fontWeight: FontWeight.bold)),
                     onPressed: (){
+                      setState((){
+                        pressed2 = !pressed2;
+                      });
+                      //Ingredient btn is pressed so unpress Analysis btn
+                      pressed1 = true;
                       showText(); //Controls visibility
                     },
+                    style: pressed2 //Ingredients btn decoration on press
+                        ?TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Colors.white,
+                    ): TextButton.styleFrom(
+                      shape: BeveledRectangleBorder(),
+                      primary: Colors.transparent,
+                      backgroundColor: Colors.grey[100],
+                    ),
 
                     icon: Icon(
                       Icons.arrow_drop_down,
@@ -132,7 +168,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                         mainAxisSize: MainAxisSize.min,
                         children:
                         keys.map((String ingredient) => TextButton.icon(
-                          onPressed: (){  //show description, rating when ingredient is pressed
+                          onPressed: (){  //popup show description, rating when ingredient is pressed
                             showDialog(
                                 context: context,
                                 builder: (context){
@@ -140,56 +176,67 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                     elevation: 16,
                                     child: Container(
+                                      decoration: BoxDecoration(  //decorate popup
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 2,
+                                              blurRadius: 7,
+                                              offset: Offset(2,3),
+                                            ),
+                                          ]
+                                      ),
                                       child: ListView(
                                         padding: EdgeInsets.all(10),
                                         shrinkWrap: true,
                                         children: [
-                                          SizedBox(height: 20), //display ingredient name
-                                          Center(
+                                          SizedBox(height: 20),
+                                          Center(//display ingredient name
                                               child: Text(
                                                 ingredient,
-                                                style: TextStyle(fontSize: 18),
-                                          )),
+                                                style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold),
+                                              )),
                                           Column( //display ingredient description
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SizedBox(height: 12),
                                               Container(height: 2),
-                                              Row(
+                                              Row(  //display ingredient description
                                                 children: [
                                                   Padding(
-                                                      padding: EdgeInsets.only(left: 4.0),
-                                                      child:  Icon(
-                                                        Icons.lightbulb,
-                                                        color: Colors.yellow,
-                                                      ),
+                                                    padding: EdgeInsets.only(left: 4.0),
+                                                    child:  Icon(
+                                                      Icons.lightbulb,
+                                                      color: Colors.yellow,
+                                                    ),
                                                   ),
 
                                                   Text(
                                                       "Description",
-                                                      style: TextStyle(fontSize: 15),
+                                                      style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold),
                                                       textAlign: TextAlign.left
                                                   ),
                                                 ],
                                               ),
                                               Padding(
-                                                  padding: EdgeInsets.all(10.0),
+                                                  padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
                                                   child:  Text(
                                                     "${results[ingredient]?.elementAt(0)}",
-                                                    style: TextStyle(height: 1.5, fontSize: 15),
+                                                    style: TextStyle(height: 1.5, fontSize: 15 * textScale),
 
                                                   )
                                               ),
-                                              Row(
+                                              Row(  //display ingredient rating
                                                 children: [
                                                   Padding(
                                                     padding: EdgeInsets.only(left: 4.0),
                                                     child:  Icon(
                                                       Icons.health_and_safety_rounded,
                                                       color: btnColor[ingredient],
-                                                     ),
                                                     ),
-                                                  displayRating(btnColor[ingredient].toString())
+                                                  ),
+                                                  displayRating(btnColor[ingredient].toString(), textScale)
                                                 ],
                                               ),
                                             ],
@@ -200,18 +247,19 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                     ),
                                   );
                                 }
-                              );
-                            },
+                            );
+                          },
 
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
                             fixedSize: MaterialStateProperty.all(Size.fromWidth(350)),
                           ),
 
-                          label: Align(
+                          label: Align( //display ingredient name button
                               alignment: Alignment.topLeft,
-                              child: Text(ingredient, style: TextStyle(color: Colors.white,
-                                  fontSize: 15))
+                              child: Text(
+                                  ingredient,
+                                  style: TextStyle(color: Colors.white, fontSize: 15 * textScale, fontWeight: FontWeight.bold))
                           ),
                           icon: Icon(
                               Icons.arrow_drop_down,
@@ -244,7 +292,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
             //     ),
             //   ),
             // ),
-            
+
 
             // Container(
             //   child:
@@ -286,7 +334,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 child: Text("List all ingredients")
             )
           ]
-       ),
+      ),
     );
   }
 
@@ -325,29 +373,29 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       _isVisible = !_isVisible;
     });
   }
-  Text displayRating(String ratingColor){
+  Text displayRating(String ratingColor, double textScale){
     if(ratingColor == "MaterialColor(primary value: Color(0xff4caf50))"){
       return rating = Text(
-          "Healthy",
-          style: TextStyle(height: 1.5, fontSize: 15)
+          "Recommended",
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
       );
     }
     else if (ratingColor== "MaterialColor(primary value: Color(0xffffeb3b))"){
       return rating = Text(
           "Not Recommended",
-          style: TextStyle(height: 1.5, fontSize: 15)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
       );
     }
     else if (ratingColor == "MaterialColor(primary value: Color(0xfff44336))"){
       return rating = Text(
           "Avoid",
-          style: TextStyle(height: 1.5, fontSize: 15)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
       );
     }
     else{
       return rating = Text(
           "Neutral",
-          style: TextStyle(height: 1.5, fontSize: 15)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
       );
     }
   }

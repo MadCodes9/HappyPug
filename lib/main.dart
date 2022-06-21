@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final textScale = MediaQuery.of(context).textScaleFactor;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -111,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Text(
                                       "Gallery",
                                       style: TextStyle(
-                                          fontSize: 13, color: Colors.grey[600]),
+                                          fontSize: 13 * textScale, color: Colors.grey[600]),
                                     )
                                   ],
                                 ),
@@ -146,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Text(
                                       "Camera",
                                       style: TextStyle(
-                                          fontSize: 13, color: Colors.grey[600]),
+                                          fontSize: 13 * textScale, color: Colors.grey[600]),
                                     )
                                   ],
                                 ),
