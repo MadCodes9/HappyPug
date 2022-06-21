@@ -145,13 +145,13 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                       child: ListView(
                                         shrinkWrap: true,
                                         children: [
-                                          SizedBox(height: 20),
-                                          Center(child: Text('Hello There')),
-                                          Column(
+                                          SizedBox(height: 20), //display ingredient name
+                                          Center(child: Text(ingredient)),
+                                          Column( //display ingredient description
                                             children: [
                                               SizedBox(height: 12),
                                               Container(height: 2),
-                                              Text("INFO")
+                                              Text("${results[ingredient]?.elementAt(0)}")
                                             ],
                                           )
 
