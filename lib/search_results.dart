@@ -143,15 +143,28 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                     elevation: 16,
                                     child: Container(
                                       child: ListView(
+                                        padding: EdgeInsets.all(10),
                                         shrinkWrap: true,
                                         children: [
                                           SizedBox(height: 20), //display ingredient name
-                                          Center(child: Text(ingredient)),
+                                          Center(
+                                              child: Text(
+                                                ingredient,
+                                                style: TextStyle(fontSize: 18),
+                                          )),
                                           Column( //display ingredient description
                                             children: [
                                               SizedBox(height: 12),
                                               Container(height: 2),
-                                              Text("${results[ingredient]?.elementAt(0)}")
+                                              Text(
+                                                "Description",
+                                                style: TextStyle(fontSize: 15),
+                                                textAlign: TextAlign.left
+                                              ),
+                                              Text(
+                                                "${results[ingredient]?.elementAt(0)}",
+                                                style: TextStyle(fontSize: 15),
+                                              )
                                             ],
                                           )
 
