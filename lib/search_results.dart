@@ -153,6 +153,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                 style: TextStyle(fontSize: 18),
                                           )),
                                           Column( //display ingredient description
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SizedBox(height: 12),
                                               Container(height: 2),
