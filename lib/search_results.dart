@@ -20,8 +20,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
   bool _isVisible = false;
-  bool _isVisible2 = false;
-
+  Text rating = Text("");
   final Map<String,Color> btnColor = {};
 
   @override
@@ -57,7 +56,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
                 ),
                 Icon(
-                  Icons.warning_amber_rounded,
+                  Icons.report_problem_rounded,
                   color: Colors.yellow,
                 ),
                 Expanded(
@@ -87,7 +86,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               children: [
                 ButtonTheme(
                   child: TextButton.icon(
-                    label: Text("Overall", style: TextStyle(color: Colors.black,
+                    label: Text("Analysis", style: TextStyle(color: Colors.black,
                     fontSize: 15)),
                     icon: Icon(
                       Icons.arrow_drop_down,
@@ -133,8 +132,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                         mainAxisSize: MainAxisSize.min,
                         children:
                         keys.map((String ingredient) => TextButton.icon(
-                          onPressed: (){  //show description, rating when button is pressed
-                            //showIngredientInfo();
+                          onPressed: (){  //show description, rating when ingredient is pressed
                             showDialog(
                                 context: context,
                                 builder: (context){
@@ -157,15 +155,43 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                             children: [
                                               SizedBox(height: 12),
                                               Container(height: 2),
-                                              Text(
-                                                "Description",
-                                                style: TextStyle(fontSize: 15),
-                                                textAlign: TextAlign.left
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                      padding: EdgeInsets.only(left: 4.0),
+                                                      child:  Icon(
+                                                        Icons.lightbulb,
+                                                        color: Colors.yellow,
+                                                      ),
+                                                  ),
+
+                                                  Text(
+                                                      "Description",
+                                                      style: TextStyle(fontSize: 15),
+                                                      textAlign: TextAlign.left
+                                                  ),
+                                                ],
                                               ),
-                                              Text(
-                                                "${results[ingredient]?.elementAt(0)}",
-                                                style: TextStyle(fontSize: 15),
-                                              )
+                                              Padding(
+                                                  padding: EdgeInsets.all(10.0),
+                                                  child:  Text(
+                                                    "${results[ingredient]?.elementAt(0)}",
+                                                    style: TextStyle(height: 1.5, fontSize: 15),
+
+                                                  )
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(left: 4.0),
+                                                    child:  Icon(
+                                                      Icons.health_and_safety_rounded,
+                                                      color: btnColor[ingredient],
+                                                     ),
+                                                    ),
+                                                  displayRating(btnColor[ingredient].toString())
+                                                ],
+                                              ),
                                             ],
                                           )
 
@@ -174,9 +200,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                     ),
                                   );
                                 }
-                            );
-                            print(ingredient);
-                            print(results[ingredient]?.elementAt(0));},
+                              );
+                            },
 
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
@@ -300,11 +325,31 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       _isVisible = !_isVisible;
     });
   }
-
-  void showIngredientInfo(){
-    setState((){
-      _isVisible2 = !_isVisible2;
-    });
+  Text displayRating(String ratingColor){
+    if(ratingColor == "MaterialColor(primary value: Color(0xff4caf50))"){
+      return rating = Text(
+          "Healthy",
+          style: TextStyle(height: 1.5, fontSize: 15)
+      );
+    }
+    else if (ratingColor== "MaterialColor(primary value: Color(0xffffeb3b))"){
+      return rating = Text(
+          "Not Recommended",
+          style: TextStyle(height: 1.5, fontSize: 15)
+      );
+    }
+    else if (ratingColor == "MaterialColor(primary value: Color(0xfff44336))"){
+      return rating = Text(
+          "Avoid",
+          style: TextStyle(height: 1.5, fontSize: 15)
+      );
+    }
+    else{
+      return rating = Text(
+          "Neutral",
+          style: TextStyle(height: 1.5, fontSize: 15)
+      );
+    }
   }
 }
 
