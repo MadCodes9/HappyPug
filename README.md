@@ -1,6 +1,5 @@
 # HappyPug
 
-
 ## General Information 
 
 ## Implementation
