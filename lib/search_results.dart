@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
   required this.numOfgreenIngred, required this.numOfredIngred, required this.numOfyellowIngred,
-  required this.scannedImage})
+  required this.scannedImage, required this.imageUrl})
       : super(key: key);//constructor
   final String title; //attribute
   final Map<String, List<String>> foundIngred;
@@ -13,7 +14,7 @@ class MySearchResultsPage extends StatefulWidget {
   final int numOfredIngred;
   final int  numOfyellowIngred;
   final Image scannedImage;
-  final call = null;
+  final imageUrl;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
@@ -22,18 +23,26 @@ class MySearchResultsPage extends StatefulWidget {
 class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
-
   bool _isVisible = false;
   bool pressed1 = true;
   bool pressed2 = true;
   Text rating = Text("");
   final Map<String,Color> btnColor = {};
 
+
+
+  @override
+  void initState(){
+    super.initState();
+    setAttributes(); //Access widget attributes
+    setButtonColor();//dynamically set background color
+  }
+
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.pink[300],
         title: Text(widget.title),
@@ -44,8 +53,19 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               margin: EdgeInsets.all(5),
               alignment: Alignment.topLeft,
               height: 200,
-              width: 400,
-              child: widget.scannedImage,
+              child: Padding(
+                padding: EdgeInsets.all(5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    widget.scannedImage,
+                    Container(
+                        child: Image.network(widget.imageUrl, width: 100)
+                    )
+                  ],
+                )
+              )
+
             ),
             // Container(
             //
@@ -302,7 +322,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
 
 
-
             //
             // ElevatedButton(
             //     onPressed: (){  //load data from firestore database
@@ -326,15 +345,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     );
   }
 
-  @override
-  void initState(){
-    super.initState();
-    setButtons(); //Access widget attributes
-    setButtonColor();//dynamically set background color
-  }
-
-
-  void setButtons() {
+  void setAttributes() {
       results = widget.foundIngred;
       keys = widget.foundIngred.keys.toList();
   }
@@ -387,5 +398,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       );
     }
   }
+
 }
 

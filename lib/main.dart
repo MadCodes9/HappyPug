@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_pug/data_base.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +11,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_page.dart';
 import 'package:recase/recase.dart';
+import 'package:day_night_switcher/day_night_switcher.dart';
 
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
@@ -23,16 +25,12 @@ void main() async {
 
 class MyApp extends StatelessWidget { //global data, style of entire app
   MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-      ),
-      home: const MyHomePage(title: 'Results'),
+      home: const MyHomePage(title: 'Home' ),
     );
   }
 }
@@ -46,6 +44,7 @@ class MyHomePage extends StatefulWidget {
 }
 class _MyHomePageState extends State<MyHomePage> {
   bool textScanning = false;
+  bool isDarkModeEnabled = false;
   XFile? imageFile;
   String scannedText = "";
   Map<String, dynamic> filtered_ingredients = {};
@@ -56,148 +55,180 @@ class _MyHomePageState extends State<MyHomePage> {
   int numOfGreenIngred = 0;
   int numOfRedIngred = 0;
   int numOfYellowIngred = 0;
+  var imageUrl;
 
+  @override
+  void initState() {
+    super.initState();
+    imageUrl = loadImage();//load image from real time database
+  }
 
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Text Recognition example"),
-      ),
-      body: Center(
-          child: SingleChildScrollView(
-            child: Container(
-                margin: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (textScanning) const CircularProgressIndicator(),
-                    if (!textScanning && imageFile == null)
-                      Container(  //Picture container
-                        width: 300,
-                        height: 300,
-                        color: Colors.grey[300]!,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Home",
+      theme: lightTheme(),
+      darkTheme: darkTheme(),
+      themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
+      home: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("Text Recognition example"),
+        ),
+        body: Center(
+            child: SingleChildScrollView(
+              child: Container(
+                  margin: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DayNightSwitcher(
+                        isDarkModeEnabled: isDarkModeEnabled,
+                        onStateChanged: onStateChanged,
+                        dayBackgroundColor: Colors.pink,
                       ),
-                    if (imageFile != null) Image.file(File(imageFile!.path)),
-                    Row(  //UI
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(  //Gallery button
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            padding: const EdgeInsets.only(top: 10),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                onPrimary: Colors.grey,
-                                shadowColor: Colors.grey[400],
-                                elevation: 10,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)),
-                              ),
-                              onPressed: () {
-                                getImage(ImageSource.gallery);
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 5),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.image,
-                                      size: 30,
-                                    ),
-                                    Text(
-                                      "Gallery",
-                                      style: TextStyle(
-                                          fontSize: 13 * textScale, color: Colors.grey[600]),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            )
-                        ),
-                        Container(  //Camera button
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            padding: const EdgeInsets.only(top: 10),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                onPrimary: Colors.grey,
-                                shadowColor: Colors.grey[400],
-                                elevation: 10,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)),
-                              ),
-                              onPressed: () {
-                                getImage(ImageSource.camera);
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 5),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.camera_alt,
-                                      size: 30,
-                                    ),
-                                    Text(
-                                      "Camera",
-                                      style: TextStyle(
-                                          fontSize: 13 * textScale, color: Colors.grey[600]),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    // Container(  //display results
-                    //   child: Text(
-                    //     scannedText,
-                    //     style: TextStyle(fontSize: 20),
-                    //   ),
-                    // )
-                    if(textScanning == false && imageFile != null)//once loading is done display buttons
-                      Column(
-                          children:<Widget>[
-                            Container(
+                      Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Text('Dark mode is ' +
+                            (isDarkModeEnabled ? 'enabled' : 'disabled') +
+                            '.'),
+                      ),
 
-                              child:  ElevatedButton(
-                                  onPressed: () =>  _filterIngredients(),
-                                  child: Text(
-                                    'search_results',
-                                  )
-                              ),
-                            ),
-                            Container(
-                              child:
-                              ElevatedButton(
-                                  onPressed: () => loginPage(),
-                                  child: Text(
-                                    'login_page',
-                                  )
-                              ),
-                            ),
-                            Container(
+
+
+
+                      if (textScanning) const CircularProgressIndicator(),
+                      if (!textScanning && imageFile == null)
+                        Container(  //Picture container
+                          width: 300,
+                          height: 300,
+                          color: Colors.grey[300]!,
+                        ),
+                      if (imageFile != null) Image.file(File(imageFile!.path)),
+                      Row(  //UI
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(  //Gallery button
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              padding: const EdgeInsets.only(top: 10),
                               child: ElevatedButton(
-                                  onPressed: () => databasePage(),
-                                  child: Text(
-                                    'data_base',
-                                  )
-                              ),
-                            ),
-                          ]
+                                style: ElevatedButton.styleFrom(
+                                //  primary: Colors.white,
+                                 // onPrimary: Colors.grey,
+                                 // shadowColor: Colors.grey[400],
+                                  elevation: 10,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                ),
+                                onPressed: () {
+                                  getImage(ImageSource.gallery);
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 5),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.image,
+                                        size: 30,
+                                      ),
+                                      Text(
+                                        "Gallery",
+                                        style: TextStyle(
+                                            fontSize: 13 * textScale,
+                                            //color: Colors.grey[600]
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                          ),
+                          Container(  //Camera button
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              padding: const EdgeInsets.only(top: 10),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  //primary: Colors.white,
+                                  //onPrimary: Colors.grey,
+                                  //shadowColor: Colors.grey[400],
+                                  elevation: 10,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                ),
+                                onPressed: () {
+                                  getImage(ImageSource.camera);
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 5),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.camera_alt,
+                                        size: 30,
+                                      ),
+                                      Text(
+                                        "Camera",
+                                        style: TextStyle(
+                                            fontSize: 13 * textScale,
+                                            //color: Colors.grey[600]
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )),
+                        ],
                       ),
-                  ],
-                )),
-          )),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      // Container(  //display results
+                      //   child: Text(
+                      //     scannedText,
+                      //     style: TextStyle(fontSize: 20),
+                      //   ),
+                      // )
+                      if(textScanning == false && imageFile != null)//once loading is done display buttons
+                        Column(
+                            children:<Widget>[
+                              Container(
+
+                                child:  ElevatedButton(
+                                    onPressed: () =>  _filterIngredients(),
+                                    child: Text(
+                                      'search_results',
+                                    )
+                                ),
+                              ),
+                              Container(
+                                child:
+                                ElevatedButton(
+                                    onPressed: () => loginPage(),
+                                    child: Text(
+                                      'login_page',
+                                    )
+                                ),
+                              ),
+                              Container(
+                                child: ElevatedButton(
+                                    onPressed: () => databasePage(),
+                                    child: Text(
+                                      'data_base',
+                                    )
+                                ),
+                              ),
+                            ]
+                        ),
+                    ],
+                  )),
+            )),
+      ),
     );
   }
   FutureOr reset(){ //reset all counters
@@ -315,7 +346,7 @@ class _MyHomePageState extends State<MyHomePage> {
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
             foundIngred: results, numOfgreenIngred: numOfGreenIngred,
             numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
-            scannedImage: Image.file(File(imageFile!.path)) )
+            scannedImage: Image.file(File(imageFile!.path)), imageUrl: imageUrl )
         ),
       ).then((value) => reset());
       print("Now on Results Page");//debug
@@ -340,10 +371,45 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
+  ThemeData lightTheme(){
+    return ThemeData(
+      primarySwatch: Colors.pink,
+      primaryColor: Colors.white,
+      brightness: Brightness.light,
+      backgroundColor: const Color(0xFFE5E5E5),
+
+      dividerColor: Colors.white54,
+    );
   }
+ ThemeData darkTheme(){
+    return ThemeData(
+      appBarTheme: AppBarTheme(color: const Color(0xFF253341)),
+      scaffoldBackgroundColor: const Color(0xFF15202B),
+      primarySwatch: Colors.grey,
+      primaryColor: const Color(0xFF253341),
+      brightness: Brightness.dark,
+      backgroundColor: const Color(0xFF212121),
+      dividerColor: Colors.black12,
+    );
+ }
+  void onStateChanged(bool isDarkModeEnabled) {
+    setState(() {
+      this.isDarkModeEnabled = isDarkModeEnabled;
+    });
+  }
+  loadImage() async {
+    FirebaseDatabase.instance.ref().child("happy_pug_image").once()
+        .then((datasnapshot) {
+      print("Sucessfully loaded the image");
+      print(datasnapshot.snapshot.value);
+      imageUrl = datasnapshot.snapshot.value;
+
+    }).catchError((error){
+      print("Failed to load the image!");
+      print(error);
+    });
+  }
+
 }
 
 
