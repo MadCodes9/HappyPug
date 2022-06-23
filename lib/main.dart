@@ -55,18 +55,24 @@ class _MyHomePageState extends State<MyHomePage> {
   int numOfGreenIngred = 0;
   int numOfRedIngred = 0;
   int numOfYellowIngred = 0;
-  var imageUrl;
+  bool onClick = false;
+  var imageUrl = null;
 
   @override
   void initState() {
     super.initState();
-    imageUrl = loadImage();//load image from real time database
+    loadImage();//load image from real time database
   }
 
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
-    return MaterialApp(
+    return
+
+
+
+
+      MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Home",
       theme: lightTheme(),
@@ -75,7 +81,20 @@ class _MyHomePageState extends State<MyHomePage> {
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("Text Recognition example"),
+          title: const Text("Scan Ingredients"),
+          actions: [  //Change theme
+            DayNightSwitcher(
+              isDarkModeEnabled: isDarkModeEnabled,
+              onStateChanged: onStateChanged,
+              dayBackgroundColor: Colors.white24,
+            ),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 10),
+            //   child: Text('Dark mode is ' +
+            //       (isDarkModeEnabled ? 'enabled' : 'disabled') +
+            //       '.'),
+            // ),
+          ],
         ),
         body: Center(
             child: SingleChildScrollView(
@@ -84,32 +103,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      DayNightSwitcher(
-                        isDarkModeEnabled: isDarkModeEnabled,
-                        onStateChanged: onStateChanged,
-                        dayBackgroundColor: Colors.pink,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Text('Dark mode is ' +
-                            (isDarkModeEnabled ? 'enabled' : 'disabled') +
-                            '.'),
-                      ),
 
-
-
-
-                      if (textScanning) const CircularProgressIndicator(),
                       if (!textScanning && imageFile == null)
-                        Container(  //Picture container
+                        Container(  //Template container
                           width: 300,
                           height: 300,
                           color: Colors.grey[300]!,
                         ),
-                      if (imageFile != null) Image.file(File(imageFile!.path)),
+
+                      Stack( //display scanned image
+                        alignment: Alignment.center,
+                        children: [
+                          if (imageFile != null) Image.file(
+                            File(imageFile!.path),
+                          ),
+                          if (textScanning) Center(
+                              child: CircularProgressIndicator(),
+                          ),
+                        ],
+                      ),
+
                       Row(  //UI
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+
                           Container(  //Gallery button
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                               padding: const EdgeInsets.only(top: 10),
@@ -117,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 style: ElevatedButton.styleFrom(
                                 //  primary: Colors.white,
                                  // onPrimary: Colors.grey,
-                                 // shadowColor: Colors.grey[400],
+                                  shadowColor: Colors.grey[400],
                                   elevation: 10,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.0)),
@@ -154,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 style: ElevatedButton.styleFrom(
                                   //primary: Colors.white,
                                   //onPrimary: Colors.grey,
-                                  //shadowColor: Colors.grey[400],
+                                  shadowColor: Colors.grey[400],
                                   elevation: 10,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.0)),
@@ -185,9 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               )),
                         ],
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
                       // Container(  //display results
                       //   child: Text(
                       //     scannedText,
@@ -198,9 +215,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         Column(
                             children:<Widget>[
                               Container(
-
                                 child:  ElevatedButton(
-                                    onPressed: () =>  _filterIngredients(),
+                                    onPressed: (){
+                                      if(onClick == false){ //user can press btn only once
+                                        _filterIngredients();
+                                      }
+                                      onClick = true;
+                                    },
+                                    //onPressed: () => _filterIngredients(),
                                     child: Text(
                                       'search_results',
                                     )
@@ -235,6 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
     numOfGreenIngred = 0;
     numOfRedIngred = 0;
     numOfYellowIngred = 0;
+    onClick = false;
     setState((){});
   }
   void getGreenIngredients(){
@@ -403,7 +426,6 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Sucessfully loaded the image");
       print(datasnapshot.snapshot.value);
       imageUrl = datasnapshot.snapshot.value;
-
     }).catchError((error){
       print("Failed to load the image!");
       print(error);

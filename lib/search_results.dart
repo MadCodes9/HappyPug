@@ -58,10 +58,11 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.scannedImage,
-                    Container(
-                        child: Image.network(widget.imageUrl, width: 100)
-                    )
+                    // if(widget.imageUrl != null)
+                    // Container(
+                    //     child: Image.network(widget.imageUrl, width: 100)
+                    // ),
+                    widget.scannedImage
                   ],
                 )
               )
