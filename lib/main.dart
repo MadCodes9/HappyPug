@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           //centerTitle: true,
           title: const Text("Happy Pug", textAlign: TextAlign.left),
-          actions: [  
+          actions: [
             Transform.scale(
               scale: 0.8,
               child: DayNightSwitcher(
@@ -87,14 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 dayBackgroundColor: Colors.white24,
 
               ),
-            )
-
-            // Padding(
-            //   padding: EdgeInsets.only(top: 10),
-            //   child: Text('Dark mode is ' +
-            //       (isDarkModeEnabled ? 'enabled' : 'disabled') +
-            //       '.'),
-            // ),
+            ),
           ],
         ),
         body: Center(
@@ -371,7 +364,8 @@ class _MyHomePageState extends State<MyHomePage> {
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
             foundIngred: results, numOfgreenIngred: numOfGreenIngred,
             numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
-            scannedImage: Image.file(File(imageFile!.path)), imageUrl: imageUrl )
+            scannedImage: Image.file(File(imageFile!.path)), imageUrl: imageUrl,
+            isDarkModeEnabled: isDarkModeEnabled,)
         ),
       ).then((value) => reset());
       print("Now on Results Page");//debug
