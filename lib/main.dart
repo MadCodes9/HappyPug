@@ -74,15 +74,21 @@ class _MyHomePageState extends State<MyHomePage> {
       darkTheme: darkTheme(),
       themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
+
         appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Scan Ingredients"),
-          actions: [  //Change theme
-            DayNightSwitcher(
-              isDarkModeEnabled: isDarkModeEnabled,
-              onStateChanged: onStateChanged,
-              dayBackgroundColor: Colors.white24,
-            ),
+          //centerTitle: true,
+          title: const Text("Happy Pug", textAlign: TextAlign.left),
+          actions: [  
+            Transform.scale(
+              scale: 0.8,
+              child: DayNightSwitcher(
+                isDarkModeEnabled: isDarkModeEnabled,
+                onStateChanged: onStateChanged,
+                dayBackgroundColor: Colors.white24,
+
+              ),
+            )
+
             // Padding(
             //   padding: EdgeInsets.only(top: 10),
             //   child: Text('Dark mode is ' +
@@ -392,11 +398,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ThemeData lightTheme(){
     return ThemeData(
-      primarySwatch: Colors.pink,
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: Colors.deepPurple[200],
+      ),
+      scaffoldBackgroundColor: Colors.grey[50],
+
       primaryColor: Colors.white,
       brightness: Brightness.light,
-      backgroundColor: const Color(0xFFE5E5E5),
-
       dividerColor: Colors.white54,
     );
   }

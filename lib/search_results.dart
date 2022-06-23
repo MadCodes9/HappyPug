@@ -96,7 +96,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 ),
                 Icon(
                   Icons.report_problem_rounded,
-                  color: Colors.yellow,
+                  color: Colors.amber,
                 ),
                 Expanded(
                   child: Text(
@@ -248,7 +248,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                     padding: EdgeInsets.only(left: 4.0),
                                                     child:  Icon(
                                                       Icons.lightbulb,
-                                                      color: Colors.yellow,
+                                                      color: Colors.amber,
                                                     ),
                                                   ),
 
@@ -353,7 +353,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
         btnColor[keys[i]] = Colors.green;
       }
       else if (results.values.elementAt(i).elementAt(1) == "yellow"){
-        btnColor[keys[i]] = Colors.yellow;
+        btnColor[keys[i]] = Colors.amber;
       }
       else if (results.values.elementAt(i).elementAt(1) == "red"){
         btnColor[keys[i]] = Colors.red;
@@ -375,7 +375,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
           style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold, color: Colors.blueGrey[900])
       );
     }
-    else if (ratingColor== "MaterialColor(primary value: Color(0xffffeb3b))"){
+    else if (ratingColor== "MaterialColor(primary value: Color(0xffffc107))"){
       return rating = Text(
           "Not Recommended",
           style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold, color: Colors.blueGrey[900])
