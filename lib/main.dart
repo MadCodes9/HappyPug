@@ -419,7 +419,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
   loadImage() async {
-    FirebaseDatabase.instance.ref().child("happy_pug_image").once()
+    FirebaseDatabase.instance.ref().child("pug_happy").once()
         .then((datasnapshot) {
       print("Sucessfully loaded the image");
       print(datasnapshot.snapshot.value);

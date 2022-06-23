@@ -49,9 +49,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       themeMode: widget.isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
 
       home:  Scaffold(
-        //backgroundColor: Colors.grey[50],
         appBar: AppBar(
-          //backgroundColor: Colors.deepPurple[200],
           title: Text(widget.title, style: TextStyle(color: Colors.white)),
         ),
         body: Column(
@@ -65,11 +63,12 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // if(widget.imageUrl != null)
-                          // Container(
-                          //     child: Image.network(widget.imageUrl, width: 100)
-                          // ),
-                          widget.scannedImage
+                          widget.scannedImage,
+                          if(widget.imageUrl != null)
+                          Container(
+
+                              child: Image.network(widget.imageUrl, width: 100)//BLEND THE EDGES
+                          ),
                         ],
                       )
                   )
