@@ -67,12 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
-    return
-
-
-
-
-      MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Home",
       theme: lightTheme(),
@@ -111,17 +106,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.grey[300]!,
                         ),
 
-                      Stack( //display scanned image
+                      if (imageFile != null)
+                      Stack( //display scanned image //PROBLEM
                         alignment: Alignment.center,
                         children: [
-                          if (imageFile != null) Image.file(
-                            File(imageFile!.path),
-                          ),
+                          Image.file(File(imageFile!.path)),
+
                           if (textScanning) Center(
-                              child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator(),
                           ),
                         ],
                       ),
+
 
                       Row(  //UI
                         mainAxisAlignment: MainAxisAlignment.center,

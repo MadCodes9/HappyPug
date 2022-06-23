@@ -42,10 +42,10 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.pink[300],
-        title: Text(widget.title),
+        backgroundColor: Colors.deepPurple[200],
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
       ),
       body: Column(
           children: <Widget>[
@@ -89,7 +89,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 Expanded(
                   child: Text(
                     "${widget.numOfgreenIngred} Healthy",
-                    style: TextStyle(color: Colors.black, fontSize: 15 * textScale),
+                    style: TextStyle(color: Colors.blueGrey[900], fontSize: 15 * textScale),
                   ),
                   flex: 0,
 
@@ -101,7 +101,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 Expanded(
                   child: Text(
                     "${widget.numOfyellowIngred} Caution",
-                    style: TextStyle(color: Colors.black, fontSize: 15 * textScale),
+                    style: TextStyle(color: Colors.blueGrey[900], fontSize: 15 * textScale),
                   ),
                   flex: 0,
 
@@ -114,7 +114,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   child: Text(
                     //"${widget.text.values.elementAt(0).elementAt(1)} Bad",
                     "${widget.numOfredIngred} Unhealthy",
-                    style: TextStyle(color: Colors.black, fontSize: 15 * textScale),
+                    style: TextStyle(color: Colors.blueGrey[900], fontSize: 15 * textScale),
                   ),
                   //flex: 0,
                 ),
@@ -125,10 +125,10 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
               children: [
                 ButtonTheme(
                   child: TextButton.icon(
-                    icon: Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.grey,
-                    ),
+                    label: Text(
+                        "Analysis",
+                        style:
+                        TextStyle(color: Colors.blueGrey[900], fontSize: 15 * textScale, fontWeight: FontWeight.bold)),
                     onPressed: (){
                       setState((){
                         pressed1 = !pressed1;
@@ -137,28 +137,21 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                       pressed2 = true;
                     },
                     style: pressed1 //Analysis btn decoration on press
-                    ?TextButton.styleFrom(
+                        ?TextButton.styleFrom(
                       shape: BeveledRectangleBorder(),
                       primary: Colors.white,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Colors.grey[50],
                     ): TextButton.styleFrom(
                       shape: BeveledRectangleBorder(),
-                      primary: Colors.transparent,
-                      backgroundColor: Colors.pink[300],
+                      primary: Colors.blueGrey[900],
+                      backgroundColor: Colors.deepPurple[50],
                     ),
-                    label: Text(
-                        "Analysis",
-                        style: pressed1
-                        ?TextStyle(
-                            color: Colors.black,
-                            fontSize: 15 * textScale,
-                            fontWeight: FontWeight.bold
-                        ): TextStyle(
-                            color: Colors.white,
-                            fontSize: 15 * textScale,
-                            fontWeight: FontWeight.bold,
-                        )
+
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.grey,
                     ),
+
 
                   ),
                 ),
@@ -168,7 +161,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     label: Text(
                         "Ingredients",
                         style:
-                        TextStyle(color: Colors.black, fontSize: 15 * textScale, fontWeight: FontWeight.bold)),
+                        TextStyle(color: Colors.blueGrey[900], fontSize: 15 * textScale, fontWeight: FontWeight.bold)),
                     onPressed: (){
                       setState((){
                         pressed2 = !pressed2;
@@ -181,11 +174,11 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                         ?TextButton.styleFrom(
                       shape: BeveledRectangleBorder(),
                       primary: Colors.white,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Colors.grey[50],
                     ): TextButton.styleFrom(
                       shape: BeveledRectangleBorder(),
-                      primary: Colors.transparent,
-                      backgroundColor: Colors.pink[50],
+                      primary: Colors.blueGrey[900],
+                      backgroundColor: Colors.deepPurple[50],
                     ),
 
                     icon: Icon(
@@ -223,7 +216,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                     elevation: 16,
                                     child: Container(
                                       decoration: BoxDecoration(  //decorate popup
-                                          color: Colors.white,
+                                          color: Colors.grey[50],
                                           boxShadow: [
                                             BoxShadow(
                                               color: Colors.grey.withOpacity(0.5),
@@ -241,8 +234,9 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                           Center(//display ingredient name
                                               child: Text(
                                                 ingredient,
-                                                style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold),
-                                              )),
+                                                style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
+                                                    color: Colors.blueGrey[900]))
+                                          ),
                                           Column( //display ingredient description
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
@@ -260,7 +254,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
                                                   Text(
                                                       "Description",
-                                                      style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold),
+                                                      style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold,
+                                                      color: Colors.blueGrey[900]),
                                                       textAlign: TextAlign.left
                                                   ),
                                                 ],
@@ -269,7 +264,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
                                                   child:  Text(
                                                     "${results[ingredient]?.elementAt(0)}",
-                                                    style: TextStyle(height: 1.5, fontSize: 15 * textScale),
+                                                    style: TextStyle(height: 1.5, fontSize: 15 * textScale, color: Colors.blueGrey[900]),
 
                                                   )
                                               ),
@@ -377,25 +372,25 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     if(ratingColor == "MaterialColor(primary value: Color(0xff4caf50))"){
       return rating = Text(
           "Recommended",
-          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold, color: Colors.blueGrey[900])
       );
     }
     else if (ratingColor== "MaterialColor(primary value: Color(0xffffeb3b))"){
       return rating = Text(
           "Not Recommended",
-          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold, color: Colors.blueGrey[900])
       );
     }
     else if (ratingColor == "MaterialColor(primary value: Color(0xfff44336))"){
       return rating = Text(
           "Avoid",
-          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold, color: Colors.blueGrey[900])
       );
     }
     else{
       return rating = Text(
           "Neutral",
-          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold)
+          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold, color: Colors.blueGrey[900])
       );
     }
   }
