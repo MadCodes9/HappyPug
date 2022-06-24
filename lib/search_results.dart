@@ -66,7 +66,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                           widget.scannedImage,
                           if(widget.imageUrl != null)
                           Container(
-
                               child: Image.network(widget.imageUrl, width: 100)//BLEND THE EDGES
                           ),
                         ],

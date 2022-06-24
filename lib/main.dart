@@ -57,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool onClick = false;
   var imageUrl = null;
   Map<String, double> grade = {};
+  String uploadImage = "";
 
   @override
   void initState() {
@@ -213,9 +214,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onPressed: (){
                                       if(onClick == false){ //user can press btn only once
                                         //filter ingredients then calculate the ingredient rating
-                                        // then load image from real time database
+                                        // then load image from real time database and go to result page
                                         _filterIngredients().then((value) => calculateOverallRating()).
-                                        then((value) => loadImage());
+                                        then((value) => loadImage()).then((value) => searchResultsPage());
 
 
                                       }
@@ -260,33 +261,25 @@ class _MyHomePageState extends State<MyHomePage> {
     grade = {};
     setState((){});
   }
-  void getGreenIngredients(){
+  void seperateByColorIngredients(){
     for(var i = 0; i < results.keys.length; i++){
       if(results.values.elementAt(i).elementAt(1) == "green"){//if name.color == green
         greenIngred = results.values.elementAt(i).elementAt(1);
         numOfGreenIngred++;
         print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
       }
-    }
-
-  }
-  void getRedIngredients(){
-    for(var i = 0; i < results.keys.length; i++){
       if(results.values.elementAt(i).elementAt(1) == "red"){//if name.color == red
         redIngred =  results.values.elementAt(i).elementAt(1);
         numOfRedIngred++;
         print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
       }
-    }
-  }
-  void getYellowIngredients(){
-    for(var i = 0; i < results.keys.length; i++){
       if(results.values.elementAt(i).elementAt(1) == "yellow"){//if name.color == yellow
         yellowIngred = results.values.elementAt(i).elementAt(1);
         numOfYellowIngred++;
         print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
       }
     }
+
   }
 
   Future _filterIngredients() async {
@@ -322,10 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print("Common ingredients found: ");
     print(results.keys);
-    getGreenIngredients();  //fliter ingredients by color
-    getRedIngredients();
-    getYellowIngredients();
-    searchResultsPage();  //go to result page once finished filtering
+    seperateByColorIngredients();  //fliter ingredients by color
   }
 
   void getImage(ImageSource source) async {
@@ -463,56 +453,69 @@ class _MyHomePageState extends State<MyHomePage> {
     print("Rating");
     print(overallRating);
 
+
     if(overallRating >= 97.0){
       grade["A+"] = overallRating;
+      uploadImage = "pug_happy";
     }
     else if(overallRating >= 93.0){
       grade["A"] = overallRating;
+      uploadImage = "pug_happy";
     }
     else if(overallRating >= 90.0){
       grade["A-"] = overallRating;
+      uploadImage = "pug_happy";
     }
     else if(overallRating >= 87.0){
       grade["B+"] = overallRating;
+      uploadImage = "pug_happy";
     }
     else if(overallRating >= 83.0){
       grade["B"] = overallRating;
+      uploadImage = "pug_happy";
     }
     else if(overallRating >= 80.0){
       grade["B-"] = overallRating;
+      uploadImage = "pug_happy";
     }
     else if(overallRating >= 77.0){
       grade["C+"] = overallRating;
+      uploadImage = "pug_tilted";
     }
     else if(overallRating >= 73.0){
       grade["C"] = overallRating;
+      uploadImage = "pug_tilted";
     }
     else if(overallRating >= 70.0){
       grade["C-"] = overallRating;
+      uploadImage = "pug_tilted";
     }
     else if(overallRating >= 67.0){
       grade["D+"] = overallRating;
+      uploadImage = "pug_sad";
     }
     else if(overallRating >= 63.0){
       grade["D"] = overallRating;
+      uploadImage = "pug_sad";
     }
     else if(overallRating >= 60.0){
       grade["D-"] = overallRating;
+      uploadImage = "pug_sad";
     }
     else{
       grade["F"] = overallRating;
+      uploadImage = "pug_sad";
     }
     print(grade);
   }
 
 
-  loadImage() async {
-
-    FirebaseDatabase.instance.ref().child("pug_happy").once()
+ Future loadImage() async {
+    dynamic image = await FirebaseDatabase.instance.ref().child(uploadImage).once()
         .then((datasnapshot) {
       print("Sucessfully loaded the image");
       print(datasnapshot.snapshot.value);
-      imageUrl = datasnapshot.snapshot.value;
+      return imageUrl = datasnapshot.snapshot.value;
     }).catchError((error){
       print("Failed to load the image!");
       print(error);
