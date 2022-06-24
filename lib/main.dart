@@ -468,7 +468,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool checkFirstFiveGreen = false;
     bool checkFirstFiveYellow = false;
     bool checkFirstFiveRed = false;
-
+    
     for(var i = 0; i < results.keys.length; i++){
       if(results.values.elementAt(i).elementAt(1) == "yellow"){
         overallRating += (point/2); //half point

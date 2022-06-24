@@ -101,35 +101,38 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                       ),//BLEND THE EDGES
                                      Text("Ingredient Rating",
                                          style: TextStyle(
-                                             fontWeight: FontWeight.bold,
-                                             fontSize: 15 * textScale,
-                                         )),
+                                           fontWeight: FontWeight.bold,
+                                           fontSize: 15 * textScale)
+                                     ),
                                       Container(
-                                        width: 50,
-                                        height: 50,
+                                        width: 60,
+                                        height: 60,
                                         child: Column(
-
                                           children: [
                                             Text(
                                                 "${widget.grade.keys.elementAt(0)}",
                                                 style: TextStyle(
                                                   fontSize: 15 * textScale,
-                                                )
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                             ),
                                             Text(
                                                 "${widget.grade.values.elementAt(0).toStringAsFixed(1)}%",
                                                 style: TextStyle(
                                                   fontSize: 15 * textScale,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
                                                 )
                                             )
                                           ],
                                         ),
                                         decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
                                           color: widget.gradeColor,
+                                          shape: BoxShape.circle,
                                         ),
                                         alignment: Alignment.center,
-                                        padding: EdgeInsets.all(0.5),
+                                        padding: EdgeInsets.all(5),
                                       ),
                                    ],
                                  )
