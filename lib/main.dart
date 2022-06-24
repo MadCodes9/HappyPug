@@ -47,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isDarkModeEnabled = false;
   XFile? imageFile;
   String scannedText = "";
-  Map<String, dynamic> filtered_ingredients = {};
   Map<String, List<String>> results = {};
   String greenIngred = "";
   String redIngred = "";
@@ -57,13 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int numOfYellowIngred = 0;
   bool onClick = false;
   var imageUrl = null;
+  Map<String, double> grade = {};
 
   @override
   void initState() {
     super.initState();
-    loadImage();//load image from real time database
-  }
 
+  }
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
@@ -106,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
 
                       if (imageFile != null)
-                      Stack( //display scanned image //PROBLEM
+                      Stack( //display scanned image
                         alignment: Alignment.center,
                         children: [
                           Image.file(File(imageFile!.path)),
@@ -213,7 +212,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child:  ElevatedButton(
                                     onPressed: (){
                                       if(onClick == false){ //user can press btn only once
-                                        _filterIngredients();
+                                        //filter ingredients then calculate the ingredient rating
+                                        // then load image from real time database
+                                        _filterIngredients().then((value) => calculateOverallRating()).
+                                        then((value) => loadImage());
+
+
                                       }
                                       onClick = true;
                                     },
@@ -253,6 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
     numOfRedIngred = 0;
     numOfYellowIngred = 0;
     onClick = false;
+    grade = {};
     setState((){});
   }
   void getGreenIngredients(){
@@ -418,7 +423,91 @@ class _MyHomePageState extends State<MyHomePage> {
       this.isDarkModeEnabled = isDarkModeEnabled;
     });
   }
+
+  void calculateOverallRating(){
+    double point = 100 / results.keys.length;  //each ingredient is worth this amount of points
+    double overallRating = 0.0;  //calculate overall rating
+    double bonus = 0.0; //bonus points for first 5 ingredients
+    bool checkFirstFiveGreen = false;
+    bool checkFirstFiveYellow = false;
+    bool checkFirstFiveRed = false;
+
+    for(var i = 0; i < results.keys.length; i++){
+      if(results.values.elementAt(i).elementAt(1) == "yellow"){
+        overallRating += (point/2); //half point
+        //check once if yellow in first 5 ingredients subtract bonus point once
+        if(i < 5 && checkFirstFiveYellow == false){
+          bonus -= (point/2);
+          checkFirstFiveYellow = true;
+        }
+      }
+      if(results.values.elementAt(i).elementAt(1) == "red"){
+        overallRating += 0.0; //no point
+        //check once if red in first 5 ingredients subtract bonus point once
+        if(i < 5 && checkFirstFiveRed == false){
+          bonus -= (point);
+          checkFirstFiveRed = true;
+        }
+      }
+      if(results.values.elementAt(i).elementAt(1) == "green"){ //if name.color == green
+        overallRating += point; //full point
+        //check once if all green in first 5 ingredients then add bonus point once
+        if(i == 4 && checkFirstFiveGreen == false && checkFirstFiveYellow != true
+            && checkFirstFiveRed != true){
+          bonus += point;
+          checkFirstFiveGreen = true;
+        }
+      }
+    }
+    overallRating += bonus; //add bonus points to overall rating
+    print("Rating");
+    print(overallRating);
+
+    if(overallRating >= 97.0){
+      grade["A+"] = overallRating;
+    }
+    else if(overallRating >= 93.0){
+      grade["A"] = overallRating;
+    }
+    else if(overallRating >= 90.0){
+      grade["A-"] = overallRating;
+    }
+    else if(overallRating >= 87.0){
+      grade["B+"] = overallRating;
+    }
+    else if(overallRating >= 83.0){
+      grade["B"] = overallRating;
+    }
+    else if(overallRating >= 80.0){
+      grade["B-"] = overallRating;
+    }
+    else if(overallRating >= 77.0){
+      grade["C+"] = overallRating;
+    }
+    else if(overallRating >= 73.0){
+      grade["C"] = overallRating;
+    }
+    else if(overallRating >= 70.0){
+      grade["C-"] = overallRating;
+    }
+    else if(overallRating >= 67.0){
+      grade["D+"] = overallRating;
+    }
+    else if(overallRating >= 63.0){
+      grade["D"] = overallRating;
+    }
+    else if(overallRating >= 60.0){
+      grade["D-"] = overallRating;
+    }
+    else{
+      grade["F"] = overallRating;
+    }
+    print(grade);
+  }
+
+
   loadImage() async {
+
     FirebaseDatabase.instance.ref().child("pug_happy").once()
         .then((datasnapshot) {
       print("Sucessfully loaded the image");
