@@ -162,7 +162,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     child: Text(
                       "${widget.numOfgreenIngred} Healthy",
                       style: TextStyle(color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
-                          fontSize: 15 * textScale),
+                          fontSize: 15 * textScale, fontWeight: FontWeight.w500),
                     ),
                     flex: 0,
 
@@ -175,7 +175,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     child: Text(
                       "${widget.numOfyellowIngred} Caution",
                       style: TextStyle(color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
-                          fontSize: 15 * textScale),
+                          fontSize: 15 * textScale,fontWeight: FontWeight.w500),
                     ),
                     flex: 0,
 
@@ -188,7 +188,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                     child: Text(
                       "${widget.numOfredIngred} Unhealthy",
                       style: TextStyle(color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
-                          fontSize: 15 * textScale),
+                          fontSize: 15 * textScale, fontWeight: FontWeight.w500),
                     ),
                     //flex: 0,
                   ),
@@ -236,7 +236,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                           "Ingredients",
                           style:
                           TextStyle(color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
-                              fontSize: 15 * textScale, fontWeight: FontWeight.bold)),
+                              fontSize: 15 * textScale, fontWeight: FontWeight.w600)),
                       onPressed: (){
                         setState((){
                           pressed2 = !pressed2;

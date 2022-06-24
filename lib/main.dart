@@ -15,7 +15,6 @@ import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,15 +56,15 @@ class _MyHomePageState extends State<MyHomePage> {
   int numOfRedIngred = 0;
   int numOfYellowIngred = 0;
   bool onClick = false;
-  var imageUrl = null;
   Map<String, double> grade = {};
   Color gradeColor = Colors.transparent;
-  String uploadImage = "";
+  var pugImageUrl;
+  String uploadPugImage = "";
+  var ingredientImageUrl;
 
   @override
   void initState() {
     super.initState();
-
   }
   @override
   Widget build(BuildContext context) {
@@ -88,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 isDarkModeEnabled: isDarkModeEnabled,
                 onStateChanged: onStateChanged,
                 dayBackgroundColor: Colors.white24,
-
               ),
             ),
           ],
@@ -100,26 +98,78 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      if(!textScanning && imageFile == null)
+                        Column(
+                          children: [
+                            Text("Scan Ingredients", style: TextStyle(fontSize: 18 * textScale,
+                            fontWeight: FontWeight.bold)
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 5,right: 5,top: 6, bottom: 20),
+                              child: Text("Focus camera on the back of ingredient list of your dog food product like below",
+                                style: TextStyle(fontSize: 15 * textScale)),
+                            ),
 
+                          ],
+
+                        ),
                       if (!textScanning && imageFile == null)
                         Container(  //Template container
-                          width: 300,
-                          height: 300,
+                          width: 270,
+                          height: 388,
                           color: Colors.grey[300]!,
+                          child: FutureBuilder(
+                            future: loadIngredientListImage(),
+                              builder: (context, snapshot){
+                                if(snapshot.connectionState == ConnectionState.done){
+                                   return Image.network(ingredientImageUrl);
+                                }
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                return Container();
+                              }
+                          ),
+
                         ),
 
                       if (imageFile != null)
-                      Stack( //display scanned image
-                        alignment: Alignment.center,
-                        children: [
-                          Image.file(File(imageFile!.path)),
+                        Column(
 
-                          if (textScanning) Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ],
-                      ),
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child:
+                              Text("Scanned Image", style: TextStyle(fontSize: 18 * textScale,
+                                  fontWeight: FontWeight.bold)
+                              ),
+                            ),
+                            Stack( //display scanned image
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  width: 300,
+                                  height: 400,
+                                  child: Image.file(File(imageFile!.path)),
+                                ),
+                                if (textScanning)
+                                  Column(
+                                    children: [
+                                      Text("Processing...", style: TextStyle(fontSize: 18 * textScale,
+                                          fontWeight: FontWeight.bold, color: Colors.white),
+                                      ),
+                                      Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ],
+                                  )
 
+                              ],
+                            ),
+                          ],
+                        ),
 
                       Row(  //UI
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -150,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Text(
                                         "Gallery",
                                         style: TextStyle(
-                                            fontSize: 13 * textScale,
+                                            fontSize: 14 * textScale,
                                         ),
                                       )
                                     ],
@@ -183,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Text(
                                         "Camera",
                                         style: TextStyle(
-                                            fontSize: 13 * textScale,
+                                            fontSize: 14 * textScale,
                                         ),
                                       )
                                     ],
@@ -205,24 +255,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         Column(
                             children:<Widget>[
                               Container(
-                                child:  ElevatedButton(
-                                    onPressed: (){
-                                      if(onClick == false){ //user can press btn only once
-                                        //filter ingredients then calculate the ingredient rating
-                                        // then load image from real time database and go to result page
-                                        _filterIngredients().then((value) => calculateOverallRating()).
-                                        then((value) => loadImage()).then((value) => searchResultsPage());
-
-
-                                      }
-                                      onClick = true;
-                                    },
-                                    //onPressed: () => _filterIngredients(),
-                                    child: Text(
-                                      'search_results',
-                                    )
+                                child:
+                                Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: ElevatedButton(
+                                        onPressed: (){
+                                          if(onClick == false){ //user can press btn only once
+                                            //filter ingredients then calculate the ingredient rating
+                                            // then load image from real time database and go to result page
+                                            _filterIngredients().then((value) => calculateOverallRating()).
+                                            then((value) => loadPugImage()).then((value) => searchResultsPage());
+                                          }
+                                          onClick = true;
+                                        },
+                                        child: Text('View Results', style: TextStyle(fontSize: 14 * textScale))
+                                    ),
                                 ),
                               ),
+
                               Container(
                                 child:
                                 ElevatedButton(
@@ -232,6 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )
                                 ),
                               ),
+
                               Container(
                                 child: ElevatedButton(
                                     onPressed: () => databasePage(),
@@ -354,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
         MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
             foundIngred: results, numOfgreenIngred: numOfGreenIngred,
             numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
-            scannedImage: Image.file(File(imageFile!.path)), imageUrl: imageUrl,
+            scannedImage: Image.file(File(imageFile!.path)), imageUrl: pugImageUrl,
             isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor
           )
         ),
@@ -452,87 +503,98 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if(overallRating >= 97.0){
       grade["A+"] = overallRating;
-      uploadImage = "pug_happy";
+      uploadPugImage = "pug_happy";
       gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 93.0){
       grade["A"] = overallRating;
-      uploadImage = "pug_happy";
+      uploadPugImage = "pug_happy";
       gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 90.0){
       grade["A-"] = overallRating;
-      uploadImage = "pug_happy";
+      uploadPugImage = "pug_happy";
       gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 87.0){
       grade["B+"] = overallRating;
-      uploadImage = "pug_happy";
+      uploadPugImage = "pug_happy";
       gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 83.0){
       grade["B"] = overallRating;
-      uploadImage = "pug_happy";
+      uploadPugImage = "pug_happy";
       gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 80.0){
       grade["B-"] = overallRating;
-      uploadImage = "pug_happy";
+      uploadPugImage = "pug_happy";
       gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 77.0){
       grade["C+"] = overallRating;
-      uploadImage = "pug_tilted";
+      uploadPugImage = "pug_tilted";
       gradeColor = Colors.amber;
     }
     else if(overallRating >= 73.0){
       grade["C"] = overallRating;
-      uploadImage = "pug_tilted";
+      uploadPugImage = "pug_tilted";
       gradeColor = Colors.amber;
     }
     else if(overallRating >= 70.0){
       grade["C-"] = overallRating;
-      uploadImage = "pug_tilted";
+      uploadPugImage = "pug_tilted";
       gradeColor = Colors.amber;
     }
     else if(overallRating >= 67.0){
       grade["D+"] = overallRating;
-      uploadImage = "pug_sad";
+      uploadPugImage = "pug_sad";
       gradeColor = Colors.red;
     }
     else if(overallRating >= 63.0){
       grade["D"] = overallRating;
-      uploadImage = "pug_sad";
+      uploadPugImage = "pug_sad";
       gradeColor = Colors.red;
     }
     else if(overallRating >= 60.0){
       grade["D-"] = overallRating;
-      uploadImage = "pug_sad";
+      uploadPugImage = "pug_sad";
       gradeColor = Colors.red;
     }
     else{
       grade["F"] = overallRating;
-      uploadImage = "pug_sad";
+      uploadPugImage = "pug_sad";
       gradeColor = Colors.red;
     }
     print(grade);
   }
 
 
- Future loadImage() async {
-    dynamic image = await FirebaseDatabase.instance.ref().child(uploadImage).once()
+   loadPugImage() async {
+    dynamic image = await FirebaseDatabase.instance.ref().child(uploadPugImage).once()
         .then((datasnapshot) {
-      print("Sucessfully loaded the image");
+      print("Sucessfully loaded the pug image");
       print(datasnapshot.snapshot.value);
-      return imageUrl = datasnapshot.snapshot.value;
+      return pugImageUrl = datasnapshot.snapshot.value;
     }).catchError((error){
-      print("Failed to load the image!");
+      print("Failed to load the pug image!");
       print(error);
     });
   }
 
-}
 
+   loadIngredientListImage() async {
+    final image = await FirebaseDatabase.instance.ref().child("ingredient_list_example").once()
+        .then((datasnapshot) {
+      print("Sucessfully loaded the ingredient list example image");
+      print(datasnapshot.snapshot.value);
+      ingredientImageUrl =  datasnapshot.snapshot.value;
+    }).catchError((error){
+      print("Failed to load  the ingredient list example image!");
+      print(error);
+    });
+  }
+}
 
     // entire UI
     // return FutureBuilder(
