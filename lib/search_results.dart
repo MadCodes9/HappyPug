@@ -7,7 +7,8 @@ import 'main.dart';
 class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
   required this.numOfgreenIngred, required this.numOfredIngred, required this.numOfyellowIngred,
-  required this.scannedImage, required this.imageUrl, required this.isDarkModeEnabled})
+  required this.scannedImage, required this.imageUrl, required this.isDarkModeEnabled,
+  required this.grade, required this.gradeColor})
       : super(key: key);//constructor
   final String title; //attribute
   final Map<String, List<String>> foundIngred;
@@ -16,7 +17,9 @@ class MySearchResultsPage extends StatefulWidget {
   final int  numOfyellowIngred;
   final Image scannedImage;
   final bool isDarkModeEnabled;
+  final  Map<String, double> grade;
   final imageUrl;
+  final Color gradeColor;
 
   @override
   State<MySearchResultsPage> createState() => _MySearchResultsState();
@@ -30,6 +33,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   bool pressed2 = true;
   Text rating = Text("");
   final Map<String,Color> btnColor = {};
+  Map<String,double> map = {};
 
 
   @override
@@ -56,21 +60,71 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
             children: <Widget>[
               Container(
                   margin: EdgeInsets.all(5),
-                  alignment: Alignment.topLeft,
                   height: 200,
                   child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          widget.scannedImage,
-                          if(widget.imageUrl != null)
-                          Container(
-                              child: Image.network(widget.imageUrl, width: 100)//BLEND THE EDGES
-                          ),
-                        ],
-                      )
-                  )
+                     padding: EdgeInsets.all(5),
+                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Expanded(
+                           flex: 0,
+                           child: Container(
+                             alignment: Alignment.topLeft,
+                             child: widget.scannedImage,
+                           )
+                         ),
+                         //display pug image along with overall rating
+                         if(widget.imageUrl != null)
+                           Expanded(
+                             flex: 1,
+                               child: Container(
+                                 alignment: Alignment.center,
+                                 child: Column(
+                                   children: [
+                                      Image.network(
+                                       widget.imageUrl,
+                                       width: 100,
+                                      ),//BLEND THE EDGES
+                                     Text("Ingredient Rating",
+                                         style: TextStyle(
+                                             fontWeight: FontWeight.bold,
+                                             fontSize: 15 * textScale,
+
+                                         )),
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        child: Column(
+
+                                          children: [
+                                            Text(
+                                                "${widget.grade.keys.elementAt(0)}",
+                                                style: TextStyle(
+                                                  fontSize: 15 * textScale,
+                                                )
+                                            ),
+                                            Text(
+                                                "${widget.grade.values.elementAt(0).toStringAsFixed(1)}%",
+                                                style: TextStyle(
+                                                  fontSize: 15 * textScale,
+                                                )
+                                            )
+                                          ],
+                                        ),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: widget.gradeColor,
+                                        ),
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.all(0.5),
+                                      ),
+                                   ],
+                                 )
+                               )
+                           )
+                       ],
+                     )
+                 )
 
               ),
               // Container(
@@ -353,6 +407,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   void setAttributes() {
       results = widget.foundIngred;
       keys = widget.foundIngred.keys.toList();
+
   }
 
   //store ingredient name and color pair in Map to set the color of the dynamic buttons

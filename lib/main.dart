@@ -57,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool onClick = false;
   var imageUrl = null;
   Map<String, double> grade = {};
+  Color gradeColor = Colors.transparent;
   String uploadImage = "";
 
   @override
@@ -315,7 +316,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print("Common ingredients found: ");
     print(results.keys);
-    seperateByColorIngredients();  //fliter ingredients by color
+    seperateByColorIngredients();  //filter ingredients by color
   }
 
   void getImage(ImageSource source) async {
@@ -360,7 +361,8 @@ class _MyHomePageState extends State<MyHomePage> {
             foundIngred: results, numOfgreenIngred: numOfGreenIngred,
             numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
             scannedImage: Image.file(File(imageFile!.path)), imageUrl: imageUrl,
-            isDarkModeEnabled: isDarkModeEnabled,)
+            isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor
+          )
         ),
       ).then((value) => reset());
       print("Now on Results Page");//debug
@@ -457,54 +459,67 @@ class _MyHomePageState extends State<MyHomePage> {
     if(overallRating >= 97.0){
       grade["A+"] = overallRating;
       uploadImage = "pug_happy";
+      gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 93.0){
       grade["A"] = overallRating;
       uploadImage = "pug_happy";
+      gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 90.0){
       grade["A-"] = overallRating;
       uploadImage = "pug_happy";
+      gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 87.0){
       grade["B+"] = overallRating;
       uploadImage = "pug_happy";
+      gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 83.0){
       grade["B"] = overallRating;
       uploadImage = "pug_happy";
+      gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 80.0){
       grade["B-"] = overallRating;
       uploadImage = "pug_happy";
+      gradeColor = Colors.lightGreen;
     }
     else if(overallRating >= 77.0){
       grade["C+"] = overallRating;
       uploadImage = "pug_tilted";
+      gradeColor = Colors.amber;
     }
     else if(overallRating >= 73.0){
       grade["C"] = overallRating;
       uploadImage = "pug_tilted";
+      gradeColor = Colors.amber;
     }
     else if(overallRating >= 70.0){
       grade["C-"] = overallRating;
       uploadImage = "pug_tilted";
+      gradeColor = Colors.amber;
     }
     else if(overallRating >= 67.0){
       grade["D+"] = overallRating;
       uploadImage = "pug_sad";
+      gradeColor = Colors.red;
     }
     else if(overallRating >= 63.0){
       grade["D"] = overallRating;
       uploadImage = "pug_sad";
+      gradeColor = Colors.red;
     }
     else if(overallRating >= 60.0){
       grade["D-"] = overallRating;
       uploadImage = "pug_sad";
+      gradeColor = Colors.red;
     }
     else{
       grade["F"] = overallRating;
       uploadImage = "pug_sad";
+      gradeColor = Colors.red;
     }
     print(grade);
   }
