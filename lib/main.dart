@@ -15,6 +15,7 @@ import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
+
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,12 +103,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         Column(
                           children: [
                             Text("Scan Ingredients", style: TextStyle(fontSize: 18 * textScale,
-                            fontWeight: FontWeight.bold)
+                            fontWeight: FontWeight.bold, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 5,right: 5,top: 6, bottom: 20),
                               child: Text("Focus camera on the back of ingredient list of your dog food product like below",
-                                style: TextStyle(fontSize: 15 * textScale)),
+                                style: TextStyle(fontSize: 15 * textScale, color: Colors.blueGrey[600])),
                             ),
 
                           ],
@@ -142,8 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             Padding(
                               padding: EdgeInsets.all(10),
                               child:
-                              Text("Scanned Image", style: TextStyle(fontSize: 18 * textScale,
-                                  fontWeight: FontWeight.bold)
+                              Text("Captured Image", style: TextStyle(fontSize: 18 * textScale,
+                                  fontWeight: FontWeight.bold, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                               ),
                             ),
                             Stack( //display scanned image
@@ -468,7 +469,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool checkFirstFiveGreen = false;
     bool checkFirstFiveYellow = false;
     bool checkFirstFiveRed = false;
-    
+
     for(var i = 0; i < results.keys.length; i++){
       if(results.values.elementAt(i).elementAt(1) == "yellow"){
         overallRating += (point/2); //half point

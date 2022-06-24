@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'main.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
@@ -29,18 +30,31 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   Map<String, List<String>> results = {};
   List<String> keys = [];
   bool _isVisible = false;
+  bool _isVisible2 = false;
   bool pressed1 = true;
   bool pressed2 = true;
   Text rating = Text("");
   final Map<String,Color> btnColor = {};
-  Map<String,double> map = {};
+  Map<String, double> pieChartData = {};
+  Map<String, double> test = {
+    "Meats":5,
+    "Fish & Shellfish":1,
+    "Grains":10,
+    "Vegetables":5,
+    "Fruits, Beans & Seeds":15,
+    "Herbs":4,
+    "Supplements":23,
+    "Additives":3,
+    "Other":7,
+  };
 
 
   @override
   void initState(){
     super.initState();
     setAttributes(); //Access widget attributes
-    setButtonColor();//dynamically set background color
+    setButtonColor(); //dynamically set background color
+    setPieChartData(); //set pie chart data with ingredient labels
   }
 
   @override
@@ -102,7 +116,9 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                      Text("Ingredient Rating",
                                          style: TextStyle(
                                            fontWeight: FontWeight.bold,
-                                           fontSize: 15 * textScale)
+                                           fontSize: 15 * textScale,
+                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
+                                         )
                                      ),
                                       Container(
                                         width: 60,
@@ -213,6 +229,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                           _isVisible = false;
                         });
                         pressed2 = true;
+                        showPieChart();
                       },
                       style: pressed1 //Analysis btn decoration on press
                           ?TextButton.styleFrom(
@@ -220,7 +237,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
                       ): TextButton.styleFrom(
                         shape: BeveledRectangleBorder(),
-                        primary: Colors.blueGrey[900],
                         backgroundColor: widget.isDarkModeEnabled ?Colors.grey: Colors.deepPurple[50],
                       ),
 
@@ -243,10 +259,11 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                       onPressed: (){
                         setState((){
                           pressed2 = !pressed2;
+                          _isVisible2 = false;
                         });
                         //Ingredient btn is pressed so unpress Analysis btn
                         pressed1 = true;
-                        showText(); //Controls visibility
+                        showIngredients(); //Controls visibility
                       },
                       style: pressed2 //Ingredients btn decoration on press
                           ?TextButton.styleFrom(
@@ -267,131 +284,179 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                 ],
               ),
 
+              Stack(  //shows analysis btn info or ingredients btn info
+                children: [
+                    Expanded( //Display pie chart
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child:
+                        Visibility(
+                          visible: _isVisible2,
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.all(8.0),
+                            scrollDirection: Axis.vertical,
+                            child:
+                            PieChart(
+                              chartType: ChartType.ring,
+                              chartLegendSpacing: 32,
+                              ringStrokeWidth: 20,
+                              chartRadius:  MediaQuery.of(context).size.width,//determines the size of the chart
+                              legendOptions: LegendOptions(
+                                showLegendsInRow: false,
+                                legendPosition: LegendPosition.right,
+                                showLegends: true,
+                                legendTextStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14 * textScale,
+                                  color:  widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]
+                                ),
+                              ),
+                              chartValuesOptions: ChartValuesOptions(
+                                showChartValueBackground: true,
+                                showChartValues: true,
+                                showChartValuesInPercentage: true,
+                                showChartValuesOutside: false,
+                                decimalPlaces: 1,
+                              ),
+                              dataMap: test,
 
+                            )
+                          ),
+                        ),
+                      ),
+                    ),
 
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child:
-                  Visibility( //show and hide ingredients
-                    visible: _isVisible,
-                    child:
-                    SingleChildScrollView( //scrollable content
-                      padding: EdgeInsets.all(8.0),
-                      scrollDirection: Axis.vertical,
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topCenter,
                       child:
-                      Column(  //dynamically display ingredients
-                          mainAxisSize: MainAxisSize.min,
-                          children:
-                          keys.map((String ingredient) => TextButton.icon(
-                            onPressed: (){  //popup show description, rating when ingredient is pressed
-                              showDialog(
-                                  context: context,
-                                  builder: (context){
-                                    return Dialog(
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                      elevation: 16,
-                                      child: Container(
-                                        decoration: BoxDecoration(  //decorate popup
-                                            //color: Colors.grey[50],
-                                            color: widget.isDarkModeEnabled ?Colors.grey: Colors.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(0.5),
-                                                spreadRadius: 2,
-                                                blurRadius: 7,
-                                                offset: Offset(2,3),
-                                              ),
-                                            ]
-                                        ),
-                                        child: ListView(
-                                          padding: EdgeInsets.all(10),
-                                          shrinkWrap: true,
-                                          children: [
-                                            SizedBox(height: 20),
-                                            Center(//display ingredient name
-                                                child: Text(
-                                                    ingredient,
-                                                    style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
-                                                        color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]))
+                      Visibility( //show and hide ingredients
+                        visible: _isVisible,
+                        child:
+                        SingleChildScrollView( //scrollable content
+                          padding: EdgeInsets.all(8.0),
+                          scrollDirection: Axis.vertical,
+                          child:
+                          Column(  //dynamically display ingredients
+                              mainAxisSize: MainAxisSize.min,
+                              children:
+                              keys.map((String ingredient) => TextButton.icon(
+                                onPressed: (){  //popup show description, rating when ingredient is pressed
+                                  showDialog(
+                                      context: context,
+                                      builder: (context){
+                                        return Dialog(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                          elevation: 16,
+                                          child: Container(
+                                            decoration: BoxDecoration(  //decorate popup
+                                                color: widget.isDarkModeEnabled ?Colors.grey: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey.withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 7,
+                                                    offset: Offset(2,3),
+                                                  ),
+                                                ]
                                             ),
-                                            Column( //display ingredient description
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                            child: ListView(
+                                              padding: EdgeInsets.all(10),
+                                              shrinkWrap: true,
                                               children: [
-                                                SizedBox(height: 12),
-                                                Container(height: 2),
-                                                Row(  //display ingredient description
+                                                SizedBox(height: 20),
+                                                Center(//display ingredient name
+                                                    child: Text(
+                                                        ingredient,
+                                                        style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
+                                                            color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]))
+                                                ),
+                                                Column( //display ingredient description
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Padding(
-                                                      padding: EdgeInsets.only(left: 4.0),
-                                                      child:  Icon(
-                                                        Icons.lightbulb,
-                                                        color: Colors.amber,
-                                                      ),
-                                                    ),
+                                                    SizedBox(height: 12),
+                                                    Container(height: 2),
+                                                    Row(  //display ingredient description
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 4.0),
+                                                          child:  Icon(
+                                                            Icons.lightbulb,
+                                                            color: Colors.amber,
+                                                          ),
+                                                        ),
 
-                                                    Text(
-                                                        "Description",
-                                                        style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold,
-                                                            color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                        textAlign: TextAlign.left
+                                                        Text(
+                                                            "Description",
+                                                            style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold,
+                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                            textAlign: TextAlign.left
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Padding(
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                        child:  Text(
+                                                          "${results[ingredient]?.elementAt(0)}",
+                                                          style: TextStyle(height: 1.5, fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+
+                                                        )
+                                                    ),
+                                                    Row(  //display ingredient rating
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 4.0),
+                                                          child:  Icon(
+                                                            Icons.health_and_safety_rounded,
+                                                            color: btnColor[ingredient],
+                                                          ),
+                                                        ),
+                                                        displayRating(btnColor[ingredient].toString(), textScale)
+                                                      ],
                                                     ),
                                                   ],
-                                                ),
-                                                Padding(
-                                                    padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                    child:  Text(
-                                                      "${results[ingredient]?.elementAt(0)}",
-                                                      style: TextStyle(height: 1.5, fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                )
 
-                                                    )
-                                                ),
-                                                Row(  //display ingredient rating
-                                                  children: [
-                                                    Padding(
-                                                      padding: EdgeInsets.only(left: 4.0),
-                                                      child:  Icon(
-                                                        Icons.health_and_safety_rounded,
-                                                        color: btnColor[ingredient],
-                                                      ),
-                                                    ),
-                                                    displayRating(btnColor[ingredient].toString(), textScale)
-                                                  ],
-                                                ),
                                               ],
-                                            )
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                  );
+                                },
 
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }
-                              );
-                            },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
+                                  fixedSize: MaterialStateProperty.all(Size.fromWidth(350)),
+                                ),
 
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
-                              fixedSize: MaterialStateProperty.all(Size.fromWidth(350)),
-                            ),
+                                label: Align( //display ingredient name button
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                        ingredient,
+                                        style: TextStyle(color: Colors.white, fontSize: 15 * textScale, fontWeight: FontWeight.bold))
+                                ),
+                                icon: Icon(
+                                    Icons.arrow_drop_down,
+                                    color: Colors.black54
+                                ),
+                              )).toList()
+                          ),
+                        ),
 
-                            label: Align( //display ingredient name button
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                    ingredient,
-                                    style: TextStyle(color: Colors.white, fontSize: 15 * textScale, fontWeight: FontWeight.bold))
-                            ),
-                            icon: Icon(
-                                Icons.arrow_drop_down,
-                                color: Colors.black54
-                            ),
-                          )).toList()
                       ),
                     ),
 
                   ),
-                ),
 
+
+
+                ],
               ),
+
+
+
+
 
 
 
@@ -443,9 +508,68 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       }
     }
   }
-  void showText(){
+
+  void setPieChartData(){
+    double numOfMeat = 0;
+    double numOfFishShellfish = 0;
+    double numOfGrain = 0;
+    double numOfVegetable = 0;
+    double numOfFruitsBeansSeeds = 0;
+    double numOfHerbs = 0;
+    double numOfSupplements = 0;
+    double numOfAdditives = 0;
+    double numOfOther = 0;
+
+    for(var i = 0; i < keys.length; i++){
+      if(results.values.elementAt(i).elementAt(2) == "Meats"){
+        numOfMeat+= numOfMeat;
+        pieChartData["Meats"] = numOfMeat;
+      }
+      else if (results.values.elementAt(i).elementAt(2) == "Fish & Shellfish"){
+        numOfFishShellfish+= numOfFishShellfish;
+        pieChartData["Fish & Shellfish"] = numOfFishShellfish;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Grains"){
+        numOfGrain+= numOfGrain;
+        pieChartData["Grains"] = numOfGrain;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Vegetables"){
+        numOfVegetable+= numOfVegetable;
+        pieChartData["Vegetables"] = numOfVegetable;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Fruits, Beans & Seeds"){
+        numOfFruitsBeansSeeds += numOfFruitsBeansSeeds;
+        pieChartData["Fruits, Beans & Seeds"] = numOfFruitsBeansSeeds;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Herbs"){
+        numOfHerbs+= numOfHerbs;
+        pieChartData["Herbs"] = numOfHerbs;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Supplements"){
+        numOfSupplements+= numOfSupplements;
+        pieChartData["Supplements"] = numOfSupplements;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Additives"){
+        numOfAdditives+= numOfAdditives;
+        pieChartData["Additives"] = numOfAdditives;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Other"){
+        numOfOther+= numOfOther;
+        pieChartData["Other"] = numOfOther;
+      }
+
+    }
+    print(pieChartData);
+  }
+
+  void showIngredients(){
     setState((){
       _isVisible = !_isVisible;
+    });
+  }
+  void showPieChart(){
+    setState((){
+      _isVisible2 = !_isVisible2;
     });
   }
   Text displayRating(String ratingColor, double textScale){
