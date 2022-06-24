@@ -54,7 +54,21 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
       home:  Scaffold(
         appBar: AppBar(
-          title: Text(widget.title, style: TextStyle(color: Colors.white)),
+          actions: [
+            IconButton(
+              padding: EdgeInsets.only(left: 10),
+              alignment: Alignment.centerLeft,
+                onPressed: () => mainPage(),
+                icon: Icon(
+                  Icons.home_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+
+            ),
+          ],
+          title: const Text("Results", textAlign: TextAlign.left),
+
         ),
         body: Column(
             children: <Widget>[
@@ -89,7 +103,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                          style: TextStyle(
                                              fontWeight: FontWeight.bold,
                                              fontSize: 15 * textScale,
-
                                          )),
                                       Container(
                                         width: 50,
@@ -467,7 +480,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: Colors.deepPurple[200],
       ),
-
       scaffoldBackgroundColor: Colors.grey[50],
       primaryColor: Colors.white,
       brightness: Brightness.light,
@@ -485,6 +497,15 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
       backgroundColor: const Color(0xFF212121),
       dividerColor: Colors.black12,
     );
+  }
+  void mainPage(){
+    setState((){
+      Navigator.pop( //change from one screen to another
+        context,
+        MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home Page",)),
+      );
+      print("Now on Main Page");//debug
+    });
   }
 
 }

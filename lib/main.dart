@@ -12,6 +12,8 @@ import 'package:image_picker/image_picker.dart';
 import 'login_page.dart';
 import 'package:recase/recase.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         appBar: AppBar(
           //centerTitle: true,
-          title: const Text("Happy Pug", textAlign: TextAlign.left),
+          title:  Text("Happy Pug", textAlign: TextAlign.left, style: GoogleFonts.pacifico(fontSize: 25, fontWeight: FontWeight.w500)),
           actions: [
             Transform.scale(
               scale: 0.8,
@@ -128,8 +130,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.only(top: 10),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                //  primary: Colors.white,
-                                 // onPrimary: Colors.grey,
                                   shadowColor: Colors.grey[400],
                                   elevation: 10,
                                   shape: RoundedRectangleBorder(
@@ -139,8 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   getImage(ImageSource.gallery);
                                 },
                                 child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 5),
+                                  margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -152,7 +151,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         "Gallery",
                                         style: TextStyle(
                                             fontSize: 13 * textScale,
-                                            //color: Colors.grey[600]
                                         ),
                                       )
                                     ],
@@ -165,8 +163,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.only(top: 10),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  //primary: Colors.white,
-                                  //onPrimary: Colors.grey,
                                   shadowColor: Colors.grey[400],
                                   elevation: 10,
                                   shape: RoundedRectangleBorder(
@@ -176,8 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   getImage(ImageSource.camera);
                                 },
                                 child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 5),
+                                  margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -189,7 +184,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         "Camera",
                                         style: TextStyle(
                                             fontSize: 13 * textScale,
-                                            //color: Colors.grey[600]
                                         ),
                                       )
                                     ],
