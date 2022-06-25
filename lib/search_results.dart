@@ -112,14 +112,238 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                       Image.network(
                                        widget.imageUrl,
                                        width: 100,
-                                      ),//BLEND THE EDGES
-                                     Text("Ingredient Rating",
-                                         style: TextStyle(
-                                           fontWeight: FontWeight.bold,
-                                           fontSize: 15 * textScale,
-                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
-                                         )
+                                      ),
+                                     Row(
+                                       mainAxisAlignment: MainAxisAlignment.center,
+                                       mainAxisSize: MainAxisSize.min,
+                                       children: [
+
+                                         Text("Overall Rating",
+                                             style: TextStyle(
+                                               fontWeight: FontWeight.bold,
+                                               fontSize: 15 * textScale,
+                                               color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
+                                             )
+                                         ),
+                                         SizedBox(
+                                           height: 16,
+                                           width: 24,
+                                           child:
+                                           IconButton(
+                                             splashRadius: 7,
+                                             splashColor: Colors.blueAccent,
+                                             hoverColor: Colors.blueAccent,
+                                             iconSize: 15,
+                                             padding: EdgeInsets.all(1),
+                                             icon: Icon(Icons.info_rounded),
+                                             color: Colors.blue[400],
+                                             onPressed: (){
+                                               showDialog(
+                                                   context: context,
+                                                   builder: (context){
+                                                     return Dialog(
+                                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                                         elevation: 16,
+                                                         child: Container(
+                                                           height: 500,
+                                                           decoration: BoxDecoration(  //decorate popup
+                                                               color: widget.isDarkModeEnabled ?Colors.grey: Colors.white,
+                                                               boxShadow: [
+                                                                 BoxShadow(
+                                                                   color: Colors.grey.withOpacity(0.5),
+                                                                   spreadRadius: 2,
+                                                                   blurRadius: 7,
+                                                                   offset: Offset(2,3),
+                                                                 ),
+                                                               ]
+                                                           ),
+                                                           child: ListView(
+                                                             padding: EdgeInsets.all(10),
+                                                             shrinkWrap: true,
+                                                             children: [
+                                                               Padding(
+                                                                 padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                 child: Text("How is the Overall Rating calculated?",
+                                                                     style: TextStyle(
+                                                                         fontSize: 18 * textScale,
+                                                                         color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                     textAlign: TextAlign.left
+                                                                 ),
+                                                               ),
+                                                               Padding(
+                                                                 padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                 child:  Text("The 'Overall Rating' is calculated out of one hundred. "
+                                                                     " When the ingredient list is filtered through the algorithm, "
+                                                                     "it reads the rating of each ingredient and either adds or "
+                                                                     "subtracts point. If a ingredient is green, then the "
+                                                                     "algorithm adds points, if a ingredient is yellow, "
+                                                                     "then the algorithm adds half-points and if the ingredient "
+                                                                     "is red then no points are added. Additional points are either "
+                                                                     "added or subtracted if the first 5 ingredients all are green, or contains a yellow, "
+                                                                     "or contains a red. Finally, the overall ingredient rating is compared to a grading scale.",
+                                                                     style: TextStyle(
+                                                                         fontSize: 15 * textScale,
+                                                                         color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                     textAlign: TextAlign.left
+                                                                 ),
+                                                               ),
+                                                               Padding(
+                                                                 padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                                 child:
+                                                                     Container(
+                                                                       child: Text("Each individual ingredient rating is calculated with consideration to AAFCO and "
+                                                                           "AllAboutDogFood.co.uk",
+                                                                           style: TextStyle(
+                                                                               fontSize: 15 * textScale,
+                                                                               color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                           textAlign: TextAlign.left
+                                                                       ),
+                                                                       color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                                       padding: EdgeInsets.all(8),
+                                                                     )
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top:10.0),
+                                                                   child: Text("Grading Scale",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale, fontWeight: FontWeight.bold,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:  Text("A+: Above 97%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:
+                                                                   Text("A: 93-96%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child: Text("A-: 90-92%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child: Text("B+: 87-89%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:  Text("B: 83-86%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:Text("B-: 80-82%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:Text("C+: 77-79%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:
+                                                                   Text("C: 73-76%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:Text("C-: 70-72%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:Text("D+: 67-69%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:Text("D: 63-66%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                   child:  Text("D-: 60-62%",
+                                                                       style: TextStyle(
+                                                                           fontSize: 15 * textScale,
+                                                                           color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                       textAlign: TextAlign.left),
+
+                                                               ),
+                                                               Padding(
+                                                                 padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                                 child:    Text("F: Below 60%",
+                                                                     style: TextStyle(
+                                                                         fontSize: 15 * textScale,
+                                                                         color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                     textAlign: TextAlign.left),
+                                                               ),
+                                                             ],
+                                                           ),
+
+                                                         )
+                                                     );
+                                                   },
+                                               );
+                                               setState((){});
+                                             },
+                                           )
+                                         ),
+                                       ],
                                      ),
+
                                       Container(
                                         width: 60,
                                         height: 60,
@@ -237,7 +461,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
                       ): TextButton.styleFrom(
                         shape: BeveledRectangleBorder(),
-                        backgroundColor: widget.isDarkModeEnabled ?Colors.grey: Colors.deepPurple[50],
+                        backgroundColor: widget.isDarkModeEnabled ?Colors.grey[800]: Colors.deepPurple[50],
                       ),
 
                       icon: Icon(
@@ -252,7 +476,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   ButtonTheme(
                     child: TextButton.icon(
                       label: Text(
-                          "Ingredients",
+                          "Ingredient List",
                           style:
                           TextStyle(color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900],
                               fontSize: 15 * textScale, fontWeight: FontWeight.w600)),
@@ -272,7 +496,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                       ): TextButton.styleFrom(
                         shape: BeveledRectangleBorder(),
                         primary: Colors.blueGrey[900],
-                        backgroundColor: widget.isDarkModeEnabled ?Colors.grey: Colors.deepPurple[50],
+                        backgroundColor: widget.isDarkModeEnabled ?Colors.grey[800]: Colors.deepPurple[50],
                       ),
 
                       icon: Icon(
@@ -286,171 +510,162 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
               Stack(  //shows analysis btn info or ingredients btn info
                 children: [
-                    Expanded( //Display pie chart
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child:
-                        Visibility(
-                          visible: _isVisible2,
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.all(8.0),
-                            scrollDirection: Axis.vertical,
-                            child:
-                            PieChart(
-                              chartType: ChartType.ring,
-                              chartLegendSpacing: 32,
-                              ringStrokeWidth: 20,
-                              chartRadius:  MediaQuery.of(context).size.width,//determines the size of the chart
-                              legendOptions: LegendOptions(
-                                showLegendsInRow: false,
-                                legendPosition: LegendPosition.right,
-                                showLegends: true,
-                                legendTextStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14 * textScale,
-                                  color:  widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]
-                                ),
-                              ),
-                              chartValuesOptions: ChartValuesOptions(
-                                showChartValueBackground: true,
-                                showChartValues: true,
-                                showChartValuesInPercentage: true,
-                                showChartValuesOutside: false,
-                                decimalPlaces: 1,
-                              ),
-                              dataMap: test,
-
-                            )
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child:
-                      Visibility( //show and hide ingredients
-                        visible: _isVisible,
-                        child:
-                        SingleChildScrollView( //scrollable content
+                 Align(
+                    alignment: Alignment.topCenter,
+                    child:
+                    Visibility(
+                      visible: _isVisible2,
+                      child: SingleChildScrollView(
                           padding: EdgeInsets.all(8.0),
                           scrollDirection: Axis.vertical,
                           child:
-                          Column(  //dynamically display ingredients
-                              mainAxisSize: MainAxisSize.min,
-                              children:
-                              keys.map((String ingredient) => TextButton.icon(
-                                onPressed: (){  //popup show description, rating when ingredient is pressed
-                                  showDialog(
-                                      context: context,
-                                      builder: (context){
-                                        return Dialog(
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                          elevation: 16,
-                                          child: Container(
-                                            decoration: BoxDecoration(  //decorate popup
-                                                color: widget.isDarkModeEnabled ?Colors.grey: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey.withOpacity(0.5),
-                                                    spreadRadius: 2,
-                                                    blurRadius: 7,
-                                                    offset: Offset(2,3),
-                                                  ),
-                                                ]
-                                            ),
-                                            child: ListView(
-                                              padding: EdgeInsets.all(10),
-                                              shrinkWrap: true,
-                                              children: [
-                                                SizedBox(height: 20),
-                                                Center(//display ingredient name
-                                                    child: Text(
-                                                        ingredient,
-                                                        style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
-                                                            color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]))
-                                                ),
-                                                Column( //display ingredient description
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(height: 12),
-                                                    Container(height: 2),
-                                                    Row(  //display ingredient description
-                                                      children: [
-                                                        Padding(
-                                                          padding: EdgeInsets.only(left: 4.0),
-                                                          child:  Icon(
-                                                            Icons.lightbulb,
-                                                            color: Colors.amber,
-                                                          ),
-                                                        ),
+                          PieChart(
+                            chartType: ChartType.ring,
+                            chartLegendSpacing: 32,
+                            ringStrokeWidth: 20,
+                            chartRadius:  MediaQuery.of(context).size.width,//determines the size of the chart
+                            legendOptions: LegendOptions(
+                              showLegendsInRow: false,
+                              legendPosition: LegendPosition.right,
+                              showLegends: true,
+                              legendTextStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14 * textScale,
+                                  color:  widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]
+                              ),
+                            ),
+                            chartValuesOptions: ChartValuesOptions(
+                              showChartValueBackground: true,
+                              showChartValues: true,
+                              showChartValuesInPercentage: true,
+                              showChartValuesOutside: false,
+                              decimalPlaces: 1,
+                            ),
+                            dataMap: test,
 
-                                                        Text(
-                                                            "Description",
-                                                            style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child:  Text(
-                                                          "${results[ingredient]?.elementAt(0)}",
-                                                          style: TextStyle(height: 1.5, fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-
-                                                        )
-                                                    ),
-                                                    Row(  //display ingredient rating
-                                                      children: [
-                                                        Padding(
-                                                          padding: EdgeInsets.only(left: 4.0),
-                                                          child:  Icon(
-                                                            Icons.health_and_safety_rounded,
-                                                            color: btnColor[ingredient],
-                                                          ),
-                                                        ),
-                                                        displayRating(btnColor[ingredient].toString(), textScale)
-                                                      ],
-                                                    ),
-                                                  ],
-                                                )
-
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                  );
-                                },
-
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
-                                  fixedSize: MaterialStateProperty.all(Size.fromWidth(350)),
-                                ),
-
-                                label: Align( //display ingredient name button
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                        ingredient,
-                                        style: TextStyle(color: Colors.white, fontSize: 15 * textScale, fontWeight: FontWeight.bold))
-                                ),
-                                icon: Icon(
-                                    Icons.arrow_drop_down,
-                                    color: Colors.black54
-                                ),
-                              )).toList()
-                          ),
-                        ),
-
+                          )
                       ),
                     ),
-
                   ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child:
+                    Visibility( //show and hide ingredients
+                      visible: _isVisible,
+                      child:
+                      SingleChildScrollView( //scrollable content
+                        padding: EdgeInsets.all(8.0),
+                        scrollDirection: Axis.vertical,
+                        child:
+                        Column(  //dynamically display ingredients
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                            keys.map((String ingredient) => TextButton.icon(
+                              onPressed: (){  //popup show description, rating when ingredient is pressed
+                                showDialog(
+                                    context: context,
+                                    builder: (context){
+                                      return Dialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                        elevation: 16,
+                                        child: Container(
+                                          decoration: BoxDecoration(  //decorate popup
+                                              color: widget.isDarkModeEnabled ?Colors.grey: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(0.5),
+                                                  spreadRadius: 2,
+                                                  blurRadius: 7,
+                                                  offset: Offset(2,3),
+                                                ),
+                                              ]
+                                          ),
+                                          child: ListView(
+                                            padding: EdgeInsets.all(10),
+                                            shrinkWrap: true,
+                                            children: [
+                                              SizedBox(height: 20),
+                                              Center(//display ingredient name
+                                                  child: Text(
+                                                      ingredient,
+                                                      style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
+                                                          color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]))
+                                              ),
+                                              Column( //display ingredient description
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(height: 12),
+                                                  Container(height: 2),
+                                                  Row(  //display ingredient description
+                                                    children: [
+                                                      Padding(
+                                                        padding: EdgeInsets.only(left: 4.0),
+                                                        child:  Icon(
+                                                          Icons.lightbulb,
+                                                          color: Colors.amber,
+                                                        ),
+                                                      ),
 
+                                                      Text(
+                                                          "Description",
+                                                          style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold,
+                                                              color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                          textAlign: TextAlign.left
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
+                                                      child:  Text(
+                                                        "${results[ingredient]?.elementAt(0)}",
+                                                        style: TextStyle(height: 1.5, fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
 
+                                                      )
+                                                  ),
+                                                  Row(  //display ingredient rating
+                                                    children: [
+                                                      Padding(
+                                                        padding: EdgeInsets.only(left: 4.0),
+                                                        child:  Icon(
+                                                          Icons.health_and_safety_rounded,
+                                                          color: btnColor[ingredient],
+                                                        ),
+                                                      ),
+                                                      displayRating(btnColor[ingredient].toString(), textScale)
+                                                    ],
+                                                  ),
+                                                ],
+                                              )
 
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                );
+                              },
+
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(btnColor[ingredient]),
+                                fixedSize: MaterialStateProperty.all(Size.fromWidth(350)),
+                              ),
+
+                              label: Align( //display ingredient name button
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                      ingredient,
+                                      style: TextStyle(color: Colors.white, fontSize: 15 * textScale, fontWeight: FontWeight.bold))
+                              ),
+                              icon: Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Colors.black54
+                              ),
+                            )).toList()
+                        ),
+                      ),
+
+                    ),
+                  ),
                 ],
               ),
 
@@ -553,7 +768,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
         numOfAdditives+= numOfAdditives;
         pieChartData["Additives"] = numOfAdditives;
       }
-      else if(results.values.elementAt(i).elementAt(2) == "Other"){
+      else{
         numOfOther+= numOfOther;
         pieChartData["Other"] = numOfOther;
       }
