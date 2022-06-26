@@ -32,14 +32,14 @@ class MyApp extends StatelessWidget { //global data, style of entire app
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'Home' ),
+      home: MyHomePage(title: 'Home')
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);//constructor
-  final String title; //attribute
+  MyHomePage({Key? key, required this.title}) : super(key: key);//constructor
+  String title; //attribute
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -47,6 +47,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool textScanning = false;
   bool isDarkModeEnabled = false;
+  bool filteringResults = false;
+  bool onClickResults = false;
   XFile? imageFile;
   String scannedText = "";
   Map<String, List<String>> results = {};
@@ -56,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int numOfGreenIngred = 0;
   int numOfRedIngred = 0;
   int numOfYellowIngred = 0;
-  bool onClick = false;
   Map<String, double> grade = {};
   Color gradeColor = Colors.transparent;
   var pugImageUrl;
@@ -138,7 +139,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       if (imageFile != null)
                         Column(
-
                           children: [
                             Padding(
                               padding: EdgeInsets.all(10),
@@ -155,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   height: 400,
                                   child: Image.file(File(imageFile!.path)),
                                 ),
-                                if (textScanning)
+                                if(textScanning)
                                   Column(
                                     children: [
                                       Text("Processing...", style: TextStyle(fontSize: 18 * textScale,
@@ -165,8 +165,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                         child: CircularProgressIndicator(),
                                       ),
                                     ],
-                                  )
-
+                                  ),
+                                if(filteringResults)
+                                  Column(
+                                    children: [
+                                      Text("Filtering Ingredients...", style: TextStyle(fontSize: 18 * textScale,
+                                          fontWeight: FontWeight.bold, color: Colors.white),
+                                      ),
+                                      Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ],
+                                  ),
                               ],
                             ),
                           ],
@@ -175,7 +185,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       Row(  //UI
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-
                           Container(  //Gallery button
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                               padding: const EdgeInsets.only(top: 10),
@@ -243,16 +252,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               )),
                         ],
                       ),
-                      // const SizedBox(
-                      //   height: 20,
-                      // ),
-                      // Container(  //display results
-                      //   child: Text(
-                      //     scannedText,
-                      //     style: TextStyle(fontSize: 20),
-                      //   ),
-                      // )
-                      if(textScanning == false && imageFile != null)//once loading is done display buttons
+
+                      //once loading is done display buttons and results are not empty
+                      if(textScanning == false && imageFile != null)
                         Column(
                             children:<Widget>[
                               Container(
@@ -260,14 +262,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Padding(
                                     padding: EdgeInsets.all(10),
                                     child: ElevatedButton(
-                                        onPressed: (){
-                                          if(onClick == false){ //user can press btn only once
+                                        onPressed: () {
+                                          //user can press btn only once
+                                          if(onClickResults == false){
+                                            filteringResults = true;
                                             //filter ingredients then calculate the ingredient rating
-                                            // then load image from real time database and go to result page
+                                            // then load image from real time database and than go to result page
                                             _filterIngredients().then((value) => calculateOverallRating()).
                                             then((value) => loadPugImage()).then((value) => searchResultsPage());
                                           }
-                                          onClick = true;
+                                         onClickResults = true;
                                         },
                                         child: Text('View Results', style: TextStyle(fontSize: 14 * textScale))
                                     ),
@@ -304,10 +308,12 @@ class _MyHomePageState extends State<MyHomePage> {
     numOfGreenIngred = 0;
     numOfRedIngred = 0;
     numOfYellowIngred = 0;
-    onClick = false;
+    onClickResults = false;
+    filteringResults = false;
     grade = {};
     setState((){});
   }
+
   void seperateByColorIngredients(){
     for(var i = 0; i < results.keys.length; i++){
       if(results.values.elementAt(i).elementAt(1) == "green"){//if name.color == green
@@ -397,22 +403,61 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //sends filtered data to search page and resets counters
+  //checks if results is empty, sends filtered data to search page and resets counters
   void searchResultsPage(){
-    //Map<String, List<String>> textToSend = results;
+    //if results are empty alert user and let them try again
+    if(results.isEmpty){
+      showDialog(
+          context: context,
+          builder: (context){
+            filteringResults = false; //reset click states
+            onClickResults = false;
+            return  AlertDialog(
+              buttonPadding: EdgeInsets.all(0.8),
+              backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
+              title: Text("Alert", style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold,
+                  color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+              ),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Text("No ingredients found. Please try again and make sure to focus "
+                        "camera on the ingredient label.", style: TextStyle(fontSize: 15 ,
+                        color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                    )
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed:  () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
+                    ),
+                    child: Text("OK", style: TextStyle(fontSize: 15 ,
+                        color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                    )
+                )
+              ],
+            );
+          }
+      );
+    }
     setState((){
-      Navigator.push( //change from one screen to another
-        context,
-        MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
-            foundIngred: results, numOfgreenIngred: numOfGreenIngred,
-            numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
-            scannedImage: Image.file(File(imageFile!.path)), imageUrl: pugImageUrl,
-            isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor
-          )
-        ),
-      ).then((value) => reset());
-      print("Now on Results Page");//debug
-    });
+        if(results.isNotEmpty)
+          Navigator.push( //change from one screen to another
+            context,
+            MaterialPageRoute(builder: (context) => MySearchResultsPage(title: 'Results',
+                foundIngred: results, numOfgreenIngred: numOfGreenIngred,
+                numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
+                scannedImage: Image.file(File(imageFile!.path)), imageUrl: pugImageUrl,
+                isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor
+            )
+            ),
+          ).then((value) => reset());
+          print("Now on Results Page");//debug
+      });
+
   }
   void loginPage(){
     setState((){
@@ -439,7 +484,6 @@ class _MyHomePageState extends State<MyHomePage> {
         primary: Colors.deepPurple[200],
       ),
       scaffoldBackgroundColor: Colors.grey[50],
-
       primaryColor: Colors.white,
       brightness: Brightness.light,
       dividerColor: Colors.white54,
@@ -500,7 +544,6 @@ class _MyHomePageState extends State<MyHomePage> {
     overallRating += bonus; //add bonus points to overall rating
     print("Rating");
     print(overallRating);
-
 
     if(overallRating >= 97.0){
       grade["A+"] = overallRating;
@@ -570,7 +613,6 @@ class _MyHomePageState extends State<MyHomePage> {
     print(grade);
   }
 
-
    loadPugImage() async {
     dynamic image = await FirebaseDatabase.instance.ref().child(uploadPugImage).once()
         .then((datasnapshot) {
@@ -583,7 +625,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
    loadIngredientListImage() async {
     final image = await FirebaseDatabase.instance.ref().child("ingredient_list_example").once()
         .then((datasnapshot) {
@@ -595,156 +636,5 @@ class _MyHomePageState extends State<MyHomePage> {
       print(error);
     });
   }
+
 }
-
-    // entire UI
-    // return FutureBuilder(
-    //     future: myFuture,
-    //     builder: (context, snapshot) { //display once done scanning
-    //       if (snapshot.connectionState == ConnectionState.done) {
-    //         return Scaffold( //default UI
-    //             appBar: AppBar(
-    //               // Here we take the value from the MyHomePage object that was created by
-    //               // the App.build method, and use it to set our appbar title.
-    //               title: Text("Barcode Scan-" + widget.title),
-    //             ),
-    //
-    //             body: Center(
-    //               // Center is a layout widget. It takes a single child and positions it
-    //               // in the middle of the parent.
-    //                 child: Column(
-    //                     mainAxisAlignment: MainAxisAlignment.center, //alignment
-    //                     children: <Widget>[ //list of widgets
-    //                       Text(
-    //                           'Scan result : $_scanBarcode\n',
-    //                           style: TextStyle(fontSize: 20)
-    //                       ),
-    //                       ElevatedButton(
-    //                         onPressed: () => scanBarcodeNormal(),
-    //                         child: Text(
-    //                           'Try again ',
-    //                        )
-    //                       ),
-    //                       ElevatedButton(
-    //                           onPressed: () => loginPage(),
-    //                           child: Text(
-    //                             'login_page',
-    //                           )
-    //                       ),
-    //                       ElevatedButton(
-    //                           onPressed: () => databasePage(),
-    //                           child: Text(
-    //                             'data_base',
-    //                           )
-    //                       ),
-    //
-    //                     ]
-    //                 )
-    //
-    //             )
-    //         );
-    //       }
-    //       else { //when loading
-    //         return CircularProgressIndicator();
-    //       }
-    //     }
-    // );
-
-
-// class Ingredient {
-//   final String name;
-//   final String role;
-//
-//   const Ingredient({
-//     required this.name,
-//     required this.role,
-//   });
-//
-//   factory Ingredient.fromJson(Map<String, dynamic> json) {
-//     return Ingredient(
-//       name: json['name'] as String,
-//       role: json['role'] as String,
-//     );
-//   }
-// //         child: Column(
-//           // Column is also a layout widget. It takes a list of children and
-//           // arranges them vertically. By default, it sizes itself to fit its
-//           // children horizontally, and tries to be as tall as its parent.
-//           //
-//           // Invoke "debug painting" (press "p" in the console, choose the
-//           // "Toggle Debug Paint" action from the Flutter Inspector in Android
-//           // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-//           // to see the wireframe for each widget.
-//           //
-//           // Column has various properties to control how it sizes itself and
-//           // how it positions its children. Here we use mainAxisAlignment to
-//           // center the children vertically; the main axis here is the vertical
-//           // axis because Columns are vertical (the cross axis would be
-//           // horizontal).
-//           mainAxisAlignment: MainAxisAlignment.center,  //alignment
-//           children: <Widget>[ //list of widgets
-//             // Image(
-//             //     //image: NetworkImage('https://theme.zdassets.com/theme_assets/737642/a47e9e5d60e7dff1e55111cf0caa737d9621da6c.png')
-//             //   image: AssetImage('assets/appLogo.png'),
-//             // ),
-//             // ElevatedButton(
-//             //     onPressed: () => scanBarcodeNormal(),
-//             //     child: Text('Start barcode scan')),
-//
-//             Text(
-//                 'Scan result : $_scanBarcode\n',
-//                 style: TextStyle(fontSize: 20)
-//             ),
-//            ElevatedButton(
-//                onPressed: () => scanBarcodeNormal(),
-//                child: Text(
-//                  'Try again ',
-//                )
-//            ),
-//
-//             // const Text(
-//             //   'This is another text - Screen No.1',
-//             //   style: const TextStyle(
-//             //       fontSize: 20,
-//             //       fontWeight: FontWeight.bold,
-//             //       fontStyle: FontStyle.italic,
-//             //       backgroundColor: Colors.amber
-//             //   ),
-//             // ),
-//
-//             // const TextField(
-//             //   obscureText: false,
-//             //   decoration: InputDecoration(
-//             //     border: OutlineInputBorder(),
-//             //     labelText: 'Username',
-//             //   ),
-//             // ),
-//
-//             // const Text(
-//             //     'App Logo - Screen No.1'),
-//             // const Text(
-//             //   'You have clicked the button this many times:',
-//             // ),
-//             // Text(
-//             //   '${_counter * 2}',  //$ to convert to string
-//             //   style: Theme.of(context).textTheme.headline4, //style of text
-//             // ),
-//
-//             // ElevatedButton(
-//             //   onPressed: (){
-//             //     _incrementCounter();
-//             //   },
-//             //  child: Text(
-//             //    'Confirm',
-//             //    style: TextStyle(
-//             //      color: Colors.blue,
-//             //    ),
-//             //  ),
-//             // )
-//           ],
-//         ),
-//       ),
-//
-//     );
-//
-

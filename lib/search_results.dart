@@ -844,7 +844,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     setState((){
       Navigator.pop( //change from one screen to another
         context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home Page",)),
+        MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home')),
       );
       print("Now on Main Page");//debug
     });
