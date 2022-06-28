@@ -54,7 +54,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     super.initState();
     setAttributes(); //Access widget attributes
     setButtonColor(); //dynamically set background color
-    //setPieChartData(); //set pie chart data with ingredient labels
   }
 
   @override
@@ -128,8 +127,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                            ),
                                          ),
                                          SizedBox(
-                                           height: 16,
-                                           width: 24,
+                                             height: 30,
+                                             width: 25,
                                            child:
                                            IconButton(
                                              splashRadius: 7,
@@ -527,10 +526,10 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 20,
-                                    width: 24,
+                                    height: 30,
+                                    width: 25,
                                     child: IconButton(
-                                      splashRadius: 7,
+                                      splashRadius: 10,
                                       splashColor: Colors.blueAccent,
                                       hoverColor: Colors.blueAccent,
                                       iconSize: 15,
@@ -582,91 +581,253 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                         ),
                                                       ),
                                                       Padding(
+                                                          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                          child:
+                                                          Container(
+                                                            child:  RichText(
+                                                                text: TextSpan(
+                                                                  children:[
+                                                                    WidgetSpan(
+                                                                        child: Padding(
+                                                                            padding: EdgeInsets.only(right: 3),
+                                                                            child: Icon(
+                                                                              Icons.circle_rounded,
+                                                                              color: Color(0xFFFF5252),
+                                                                              size: 15,
+                                                                            )
+                                                                        )
+                                                                    ),
+                                                                    TextSpan(
+                                                                      text: "Meats - includes all meat ingredients and animal by-products except fish ingredients",
+                                                                      style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                    )
+                                                                  ],
+                                                                )
+                                                            ),
+                                                            color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                            padding: EdgeInsets.all(8),
+                                                          )
+                                                      ),
+                                                      Padding(
                                                         padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
-                                                        child: Text("Meats - includes all meat ingredients and animal by-products except fish ingredients",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        child: Container(
+                                                          child: RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFF80D8FF),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Supplements - includes vitamins, minerals, and probiotics",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Supplements - includes vitamins, minerals, and probiotics",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child: Container(
+                                                          child:  RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFF69F0AE),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Other - all other ingredients that do not fall under any ingredient category. "
+                                                                        "Mostly includes compounds of an ingredient or chemical forms",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Other - all other ingredients that do not fall under any ingredient category. "
-                                                            "Mostly includes compounds of an ingredient or chemical forms",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child:  Container(
+                                                          child:  RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFFFFFF00),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Fish & Shellfish - includes all fish ingredients and fish by-products",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Fish & Shellfish - includes all fish ingredients and fish by-products",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child: Container(
+                                                          child:  RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFFB388FF),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Grains - includes wheat, corn, rice, barely or any other cereal grain",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Grains - includes wheat, corn, rice, barely or any other cereal grain",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child: Container(
+                                                          child: RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFFFF80AB),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Vegetables - includes all whole vegetables",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Vegetables - includes all whole vegetables",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child: Container(
+                                                          child: RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFFFFAB40),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Fruits, Beans, & Seeds - includes all whole fruits, legumes, and oil seeds",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Fruits, Beans, & Seeds - includes all whole fruits, legumes, and oil seeds",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child: Container(
+                                                          child: RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFFB2FF59),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Herbs - includes any plants with leaves, seeds, or flowers used for "
+                                                                        "their flavour, aroma, nutritional constituents or medicinal properties ",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                       Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Herbs - includes any plants with leaves, seeds, or flowers used for "
-                                                            "their flavour, aroma, nutritional constituents or medicinal properties ",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
-                                                        child: Text("Additives - includes preservatives, added colouring, and added flavours",
-                                                            style: TextStyle(
-                                                                fontSize: 15 * textScale,
-                                                                color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
-                                                            textAlign: TextAlign.left
-                                                        ),
+                                                        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0, top: 10.0),
+                                                        child: Container(
+                                                          child: RichText(
+                                                              text: TextSpan(
+                                                                children:[
+                                                                  WidgetSpan(
+                                                                      child: Padding(
+                                                                          padding: EdgeInsets.only(right: 3),
+                                                                          child: Icon(
+                                                                            Icons.circle_rounded,
+                                                                            color: Color(0xFF536DFE),
+                                                                            size: 15,
+                                                                          )
+                                                                      )
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: "Additives - includes preservatives, added colouring, and added flavours",
+                                                                    style: TextStyle(fontSize: 15 * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                                                  )
+                                                                ],
+                                                              )
+                                                          ),
+                                                          color: widget.isDarkModeEnabled ?Colors.grey[600]: Colors.grey[100],
+                                                          padding: EdgeInsets.all(8),
+                                                        )
                                                       ),
                                                     ],
                                                   ),
-
                                                 )
                                             );
                                           },
@@ -678,10 +839,20 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                 ],
                               ),
 
-
                               PieChart(
                                 chartType: ChartType.ring,
                                 chartLegendSpacing: 32,
+                                colorList: [
+                                  Color(0xFFFF5252),
+                                  Color(0xFF80D8FF),
+                                  Color(0xFF69F0AE),
+                                  Color(0xFFFFFF00),
+                                  Color(0xFFB388FF),
+                                  Color(0xFFFF80AB),
+                                  Color(0xFFFFAB40),
+                                  Color(0xFFB2FF59),
+                                  Color(0xFF536DFE),
+                                ],
                                 ringStrokeWidth: 20,
                                 chartRadius:  MediaQuery.of(context).size.width,//determines the size of the chart
                                 legendOptions: LegendOptions(
@@ -702,7 +873,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                   decimalPlaces: 1,
                                 ),
                                 dataMap: widget.pieChartData,
-
                               )
                             ],
                           )

@@ -14,8 +14,6 @@ import 'package:recase/recase.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
-
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
