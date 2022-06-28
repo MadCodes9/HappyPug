@@ -9,16 +9,17 @@ class MySearchResultsPage extends StatefulWidget {
   const MySearchResultsPage({Key? key, required this.title, required this.foundIngred,
   required this.numOfgreenIngred, required this.numOfredIngred, required this.numOfyellowIngred,
   required this.scannedImage, required this.imageUrl, required this.isDarkModeEnabled,
-  required this.grade, required this.gradeColor})
+  required this.grade, required this.gradeColor, required this.pieChartData})
       : super(key: key);//constructor
   final String title; //attribute
-  final Map<String, List<String>> foundIngred;
   final int numOfgreenIngred;
   final int numOfredIngred;
   final int  numOfyellowIngred;
   final Image scannedImage;
   final bool isDarkModeEnabled;
+  final Map<String, List<String>> foundIngred;
   final  Map<String, double> grade;
+  final Map<String, double> pieChartData;
   final imageUrl;
   final Color gradeColor;
 
@@ -34,8 +35,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   bool pressed1 = true;
   bool pressed2 = true;
   Text rating = Text("");
-  final Map<String,Color> btnColor = {};
-  Map<String, double> pieChartData = {};
+  Map<String,Color> btnColor = {};
   Map<String, double> test = {
     "Meats":5,
     "Fish & Shellfish":1,
@@ -54,7 +54,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     super.initState();
     setAttributes(); //Access widget attributes
     setButtonColor(); //dynamically set background color
-    setPieChartData(); //set pie chart data with ingredient labels
+    //setPieChartData(); //set pie chart data with ingredient labels
   }
 
   @override
@@ -383,17 +383,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                  )
 
               ),
-              // Container(
-              //
-              //
-              //   child:
-              //
-              //   // Image(
-              //   //   height: 200,
-              //   //   width: 200,
-              //   //  // image: NetworkImage('https://i.pinimg.com/originals/53/cb/23/53cb231f4c04ae30a04a6e292eb2a48c.jpg'),
-              //   // ),
-              // ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -541,7 +531,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                               showChartValuesOutside: false,
                               decimalPlaces: 1,
                             ),
-                            dataMap: test,
+                            dataMap: widget.pieChartData,
 
                           )
                       ),
@@ -724,58 +714,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     }
   }
 
-  void setPieChartData(){
-    double numOfMeat = 0;
-    double numOfFishShellfish = 0;
-    double numOfGrain = 0;
-    double numOfVegetable = 0;
-    double numOfFruitsBeansSeeds = 0;
-    double numOfHerbs = 0;
-    double numOfSupplements = 0;
-    double numOfAdditives = 0;
-    double numOfOther = 0;
-
-    for(var i = 0; i < keys.length; i++){
-      if(results.values.elementAt(i).elementAt(2) == "Meats"){
-        numOfMeat+= numOfMeat;
-        pieChartData["Meats"] = numOfMeat;
-      }
-      else if (results.values.elementAt(i).elementAt(2) == "Fish & Shellfish"){
-        numOfFishShellfish+= numOfFishShellfish;
-        pieChartData["Fish & Shellfish"] = numOfFishShellfish;
-      }
-      else if(results.values.elementAt(i).elementAt(2) == "Grains"){
-        numOfGrain+= numOfGrain;
-        pieChartData["Grains"] = numOfGrain;
-      }
-      else if(results.values.elementAt(i).elementAt(2) == "Vegetables"){
-        numOfVegetable+= numOfVegetable;
-        pieChartData["Vegetables"] = numOfVegetable;
-      }
-      else if(results.values.elementAt(i).elementAt(2) == "Fruits, Beans & Seeds"){
-        numOfFruitsBeansSeeds += numOfFruitsBeansSeeds;
-        pieChartData["Fruits, Beans & Seeds"] = numOfFruitsBeansSeeds;
-      }
-      else if(results.values.elementAt(i).elementAt(2) == "Herbs"){
-        numOfHerbs+= numOfHerbs;
-        pieChartData["Herbs"] = numOfHerbs;
-      }
-      else if(results.values.elementAt(i).elementAt(2) == "Supplements"){
-        numOfSupplements+= numOfSupplements;
-        pieChartData["Supplements"] = numOfSupplements;
-      }
-      else if(results.values.elementAt(i).elementAt(2) == "Additives"){
-        numOfAdditives+= numOfAdditives;
-        pieChartData["Additives"] = numOfAdditives;
-      }
-      else{
-        numOfOther+= numOfOther;
-        pieChartData["Other"] = numOfOther;
-      }
-
-    }
-    print(pieChartData);
-  }
 
   void showIngredients(){
     setState((){

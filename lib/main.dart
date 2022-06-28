@@ -50,18 +50,19 @@ class _MyHomePageState extends State<MyHomePage> {
   bool filteringResults = false;
   bool onClickResults = false;
   XFile? imageFile;
-  String scannedText = "";
   Map<String, List<String>> results = {};
+  Map<String, double> pieChartData = {};
+  Map<String, double> grade = {};
+  String scannedText = "";
   String greenIngred = "";
   String redIngred = "";
   String yellowIngred = "";
+  String uploadPugImage = "";
   int numOfGreenIngred = 0;
   int numOfRedIngred = 0;
   int numOfYellowIngred = 0;
-  Map<String, double> grade = {};
   Color gradeColor = Colors.transparent;
   var pugImageUrl;
-  String uploadPugImage = "";
   var ingredientImageUrl;
 
   @override
@@ -369,6 +370,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("Common ingredients found: ");
     print(results.keys);
     seperateByColorIngredients();  //filter ingredients by color
+    setPieChartData();  //filter ingredients by label
   }
 
   void getImage(ImageSource source) async {
@@ -451,10 +453,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 foundIngred: results, numOfgreenIngred: numOfGreenIngred,
                 numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
                 scannedImage: Image.file(File(imageFile!.path)), imageUrl: pugImageUrl,
-                isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor
-            )
-            ),
-          ).then((value) => reset());
+                isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor,
+                pieChartData: pieChartData,
+            ))).then((value) => reset());
           print("Now on Results Page");//debug
       });
 
@@ -611,6 +612,88 @@ class _MyHomePageState extends State<MyHomePage> {
       gradeColor = Colors.red;
     }
     print(grade);
+  }
+
+  //filters ingredients by label for pie chart data
+  void setPieChartData(){
+    double numOfMeat = 0;
+    double numOfFishShellfish = 0;
+    double numOfGrain = 0;
+    double numOfVegetable = 0;
+    double numOfFruitsBeansSeeds = 0;
+    double numOfHerbs = 0;
+    double numOfSupplements = 0;
+    double numOfAdditives = 0;
+    double numOfOther = 0;
+
+    for(var i = 0; i < results.keys.length; i++){
+      if(results.values.elementAt(i).elementAt(2) == "Meats"){
+        numOfMeat+= 1;
+        pieChartData["Meats"] = numOfMeat;
+      }
+      else if (results.values.elementAt(i).elementAt(2) == "Fish & Shellfish"){
+        numOfFishShellfish+= 1;
+        pieChartData["Fish & Shellfish"] = numOfFishShellfish;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Grains"){
+        numOfGrain+= 1;
+        pieChartData["Grains"] = numOfGrain;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Vegetables"){
+        numOfVegetable+= 1;
+        pieChartData["Vegetables"] = numOfVegetable;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Fruits, Beans & Seeds"){
+        numOfFruitsBeansSeeds += 1;
+        pieChartData["Fruits, Beans & Seeds"] = numOfFruitsBeansSeeds;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Herbs"){
+        numOfHerbs+= 1;
+        pieChartData["Herbs"] = numOfHerbs;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Supplements"){
+        numOfSupplements+= 1;
+        pieChartData["Supplements"] = numOfSupplements;
+      }
+      else if(results.values.elementAt(i).elementAt(2) == "Additives"){
+        numOfAdditives+= 1;
+        pieChartData["Additives"] = numOfAdditives;
+      }
+      else{
+        numOfOther+= 1;
+        pieChartData["Other"] = numOfOther;
+      }
+    }
+    //if there is a label that hasn't been found, than store default data to zero
+    if(numOfMeat == 0){
+      pieChartData["Meats"] = 0;
+    }
+    if (numOfFishShellfish == 0){
+      pieChartData["Fish & Shellfish"] = 0;
+    }
+    if(numOfGrain == 0){
+      pieChartData["Grains"] = 0;
+    }
+    if(numOfVegetable == 0){
+      pieChartData["Vegetables"] = 0;
+    }
+    if(numOfFruitsBeansSeeds== 0){
+      pieChartData["Fruits, Beans & Seeds"] = 0;
+    }
+    if(numOfHerbs == "Herbs"){
+      pieChartData["Herbs"] = 0;
+    }
+    if(numOfSupplements == 0){
+      pieChartData["Supplements"] = 0;
+    }
+    if(numOfAdditives == "Additives"){
+      pieChartData["Additives"] = 0;
+    }
+    if(numOfOther == 0){
+      pieChartData["Other"] = 0;
+    }
+    print("Pie chart data");
+    print(pieChartData);
   }
 
    loadPugImage() async {
