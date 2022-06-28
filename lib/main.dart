@@ -680,13 +680,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if(numOfFruitsBeansSeeds== 0){
       pieChartData["Fruits, Beans & Seeds"] = 0;
     }
-    if(numOfHerbs == "Herbs"){
+    if(numOfHerbs == 0){
       pieChartData["Herbs"] = 0;
     }
     if(numOfSupplements == 0){
       pieChartData["Supplements"] = 0;
     }
-    if(numOfAdditives == "Additives"){
+    if(numOfAdditives == 0){
       pieChartData["Additives"] = 0;
     }
     if(numOfOther == 0){
