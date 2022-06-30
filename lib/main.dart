@@ -13,6 +13,8 @@ import 'login_page.dart';
 import 'package:recase/recase.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
@@ -20,6 +22,48 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+
+  await execute(InternetConnectionChecker());
+  // Create customized instance which can be registered via dependency injection
+  final InternetConnectionChecker customInstance =
+  InternetConnectionChecker.createInstance(
+    checkTimeout: const Duration(seconds: 1),
+    checkInterval: const Duration(seconds: 1),
+  );
+  // Check internet connection with created instance
+  await execute(customInstance);
+}
+
+Future<void> execute(
+    InternetConnectionChecker internetConnectionChecker,
+    ) async {
+  // Simple check to see if we have Internet
+  print('''The statement 'this machine is connected to the Internet' is: ''');
+  final bool isConnected = await InternetConnectionChecker().hasConnection;
+  // ignore: avoid_print
+  print(
+    isConnected.toString(),
+  );
+  print(
+    'Current status: ${await InternetConnectionChecker().connectionStatus}',
+  );
+
+  // actively listen for status updates
+  final StreamSubscription<InternetConnectionStatus> listener =
+  InternetConnectionChecker().onStatusChange.listen(
+        (InternetConnectionStatus status) {
+      switch (status) {
+        case InternetConnectionStatus.connected:
+          print('Data connection is available.');
+          break;
+        case InternetConnectionStatus.disconnected:
+          print('You are disconnected from the internet.');
+          break;
+      }
+    },
+  );
+
   runApp(MyApp());
 }
 
@@ -63,10 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
   var pugImageUrl;
   var ingredientImageUrl;
 
+
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
@@ -77,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
       darkTheme: darkTheme(),
       themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
-
         appBar: AppBar(
           //centerTitle: true,
           title:  Text("Happy Pug", textAlign: TextAlign.left, style: GoogleFonts.pacifico(fontSize: 25, fontWeight: FontWeight.w500)),
@@ -98,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   margin: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                    children:[
                       if(!textScanning && imageFile == null)
                         Column(
                           children: [
@@ -107,13 +152,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 5,right: 5,top: 6, bottom: 20),
-                              child: Text("Focus camera on the back of ingredient list of your dog food product like below",
+                              child: Text("Focus camera on the ingredient list of your dog food product like below",
                                 style: TextStyle(fontSize: 15 * textScale, color: Colors.blueGrey[600])),
                             ),
-
                           ],
-
                         ),
+
                       if (!textScanning && imageFile == null)
                         Container(  //Template container
                           width: 270,
@@ -165,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ],
                                   ),
-                                if(filteringResults)
+                                if(filteringResults == true)
                                   Column(
                                     children: [
                                       Text("Filtering Ingredients...", style: TextStyle(fontSize: 18 * textScale,
@@ -267,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             filteringResults = true;
                                             //filter ingredients then calculate the ingredient rating
                                             // then load image from real time database and than go to result page
-                                            _filterIngredients().then((value) => calculateOverallRating()).
+                                             _filterIngredients().then((value) => calculateOverallRating()).
                                             then((value) => loadPugImage()).then((value) => searchResultsPage());
                                           }
                                          onClickResults = true;
@@ -276,7 +320,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ),
                                 ),
                               ),
-
                               Container(
                                 child:
                                 ElevatedButton(
@@ -286,7 +329,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )
                                 ),
                               ),
-
                               Container(
                                 child: ElevatedButton(
                                     onPressed: () => databasePage(),
@@ -298,8 +340,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             ]
                         ),
                     ],
-                  )),
-            )),
+                  )
+              ),
+            )
+        ),
       ),
     );
   }
@@ -312,6 +356,7 @@ class _MyHomePageState extends State<MyHomePage> {
     grade = {};
     setState((){});
   }
+
 
   void seperateByColorIngredients(){
     for(var i = 0; i < results.keys.length; i++){
@@ -403,9 +448,62 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void noInternetPopup(){ //checks for Internet connection when app opens
+    showDialog(
+        context: context,
+        builder: (context){
+          filteringResults = false; //reset click states
+          onClickResults = false;
+          return AlertDialog(
+            buttonPadding: EdgeInsets.all(0.8),
+            backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
+            title: Text("Check Your Internet Connection", style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold,
+                color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+            ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Padding(
+                    padding:EdgeInsets.only(bottom: 10),
+                    child:  Icon(
+                      Icons.signal_wifi_connected_no_internet_4_rounded,
+                      color: Colors.blueAccent,
+                      size: 40,
+                    ),
+                  ),
+                  Text("It is taking a while to upload results.", style: TextStyle(fontSize: 15 ,
+                      color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                  ),
+                  Text("Either check your connection or try again", style: TextStyle(fontSize: 15 ,
+                      color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                  )
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed:  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
+                  ),
+                  child: Text("OK", style: TextStyle(fontSize: 15 ,
+                      color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                  )
+              )
+            ],
+          );
+        }
+    );
+    setState((){
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
+      ).then((value) => reset());
+    });
+  }
+
   //checks if results is empty, sends filtered data to search page and resets counters
   void searchResultsPage(){
-    //if results are empty alert user and let them try again
     if(results.isEmpty){
       showDialog(
           context: context,
