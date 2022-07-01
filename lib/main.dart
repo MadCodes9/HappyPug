@@ -321,23 +321,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ),
                                 ),
                               ),
-                              Container(
-                                child:
-                                ElevatedButton(
-                                    onPressed: () => loginPage(),
-                                    child: Text(
-                                      'login_page',
-                                    )
-                                ),
-                              ),
-                              Container(
-                                child: ElevatedButton(
-                                    onPressed: () => databasePage(),
-                                    child: Text(
-                                      'data_base',
-                                    )
-                                ),
-                              ),
                             ]
                         ),
                     ],
