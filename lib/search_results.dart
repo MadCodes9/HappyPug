@@ -1,7 +1,4 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'main.dart';
 import 'package:pie_chart/pie_chart.dart';
 
@@ -982,7 +979,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                               padding: EdgeInsets.only(left: 5.0),
                                                               child:  Icon(
                                                                 Icons.label,
-                                                                color: Colors.redAccent,
+                                                                color: Colors.purple[400],
                                                               ),
                                                             ),
                                                             Text(
@@ -1026,21 +1023,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                       ],
                     ),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    //
+                    //FOR FUTURE USE
                     // ElevatedButton(
                     //     onPressed: (){  //load data from firestore database
                     //       FirebaseFirestore.instance.collection("ingredients").get()
@@ -1061,9 +1044,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                   ]
               ),
             ),
-
-
-
 
 
       ),

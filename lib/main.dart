@@ -14,6 +14,7 @@ import 'package:recase/recase.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:string_extensions/string_extensions.dart';
 
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
@@ -363,41 +364,49 @@ class _MyHomePageState extends State<MyHomePage> {
       if(results.values.elementAt(i).elementAt(1) == "green"){//if name.color == green
         greenIngred = results.values.elementAt(i).elementAt(1);
         numOfGreenIngred++;
-        print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
       }
       if(results.values.elementAt(i).elementAt(1) == "red"){//if name.color == red
         redIngred =  results.values.elementAt(i).elementAt(1);
         numOfRedIngred++;
-        print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
       }
       if(results.values.elementAt(i).elementAt(1) == "yellow"){//if name.color == yellow
         yellowIngred = results.values.elementAt(i).elementAt(1);
         numOfYellowIngred++;
-        print(results.keys.elementAt(i) + " is " + results.values.elementAt(i).elementAt(1));
       }
     }
 
   }
 
   Future _filterIngredients() async {
-    String trim_ingredients = scannedText.replaceAll(new RegExp(r"\s+"), ""); //delete all white space
-    trim_ingredients = trim_ingredients.replaceAll(':', ','); //replace any semicolons with commas
+    String trim_ingredients = scannedText.replaceAll(':', ','); //replace any semicolons with commas
+    trim_ingredients = trim_ingredients.replaceAll('Ingredients', ','); //separate 'Ingredient
+    trim_ingredients = trim_ingredients.replaceAll('(', ','); //separate '(' and ')' with commas to get actual ingredient name
+    trim_ingredients = trim_ingredients.replaceAll(')', ',');
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
     final len = scannedIngredients.length;
 
-    ReCase rc_name;
+    //format scanned text,  first letter and second letter is capitalize capitalize the first letter
+    // after space, delete all white space,
+    for(var i = 0; i < len; i++){
+      scannedIngredients[i] = scannedIngredients[i].titleCase;
+      scannedIngredients[i] = scannedIngredients[i].split(" ").map((str) => str.capitalize).join(" ");
+      scannedIngredients[i] = scannedIngredients[i].replaceAll(new RegExp(r"\s+"), "");
+      print("Scanned Text");
+      print(scannedIngredients[i]);
+    }
+        ReCase rc_name;
     await FirebaseFirestore.instance.collection("ingredients").get()
         .then((querySnapshot) {
       print("Successfully load all ingredients");
       querySnapshot.docs.forEach((element) {
-        //format ingredients in database to compare
+        //format ingredients in database same above to compare
         rc_name = ReCase(element.data()['name']);
         String cc_name = rc_name.camelCase;
         String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
 
         //find where ingredients in database == scanned ingredients and store in map
         for (var i = 0; i < len; i++) {
-          if (formatted_name == scannedIngredients[i]) {
+          if (scannedIngredients[i] == formatted_name) {
             //Add name as key and fields as value
              results[element.data()['name']] = [element.data()['description'],
              element.data()['color'], element.data()['label']];
