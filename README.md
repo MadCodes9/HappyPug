@@ -15,7 +15,7 @@ ingredients are found, then the results are displayed on the next screen. The ov
 of a 100, so each ingredient a certain amount of points calculated by 100 divided by the number of ingredients 
 found. If a ingredient has a green rating, than it adds full points, if an ingredient is yellow, than it adds
 half-points, if an ingredient is read than it adds no points. Additional bonus points are added if the first
-five ingredients are green, than add another full pints and if there contains a yellow in the first five, than 
+five ingredients are green, than add another full points and if there contains a yellow, than 
 subtract another half-points and if there contains a red than subtract another full points.
 
 ## Technologies
