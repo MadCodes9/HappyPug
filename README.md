@@ -73,9 +73,13 @@ Project is created with
 * IDE:  Flutter 
 * Version: 3.0.1
 * Language: Dart
-* 
-## Download
-Download Happy Pug on the Google Play Store Today!
 
 **Sample Output**
+![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
+![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
+![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
+![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
+
+## Download
+App available on the Google Play Store
 
