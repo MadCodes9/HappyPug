@@ -70,6 +70,11 @@ Future _filterIngredients() async {
   ```
 
 ## Technologies
+Project is created with 
+* IDE:  Flutter 
+* Version: 3.0.1
+* Language: Dart
+* 
 ## Setup
 
 **Sample Output**
