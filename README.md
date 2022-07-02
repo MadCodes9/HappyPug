@@ -75,7 +75,9 @@ Project is created with
 * Language: Dart
 
 ## Sample Output
- <img src="ScreenShots/Screenshot2.png" height="400" height="100" align="center"> 
+<p align="center">
+ <img src="ScreenShots/Screenshot2.png" height="400" height="300"> 
+</p>
 
 ## Status
 App available on the Google Play Store<br/>
