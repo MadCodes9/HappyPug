@@ -68,14 +68,14 @@ Future _filterIngredients() async {
     setPieChartData();  //filter ingredients by label
   }
   ```
-
 ## Technologies
 Project is created with 
 * IDE:  Flutter 
 * Version: 3.0.1
 * Language: Dart
 * 
-## Setup
+## Download
+Download Happy Pug on the Google Play Store Today!
 
 **Sample Output**
 
