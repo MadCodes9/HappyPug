@@ -1,4 +1,5 @@
-# HappyPug ![image](app_logo.png|width=100px])
+# HappyPug 
+<img src="app_logo.png" width="100" height="100">
 Happy pug is a mobile application created to give transparency in dog food products. Simply scan the 
 ingredient list of any dog food product and  the results provides the user with a detailed description 
 and rating of each ingredient found in their dog food product. The user is also supplied with a pie chart 
