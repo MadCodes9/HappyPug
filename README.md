@@ -74,7 +74,7 @@ Project is created with
 * Version: 3.0.1
 * Language: Dart
 
-**Sample Output**
+## Sample Output
 ![image](ScreenShots/Screenshot2.png)
 
 ## Status
