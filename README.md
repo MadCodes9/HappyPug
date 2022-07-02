@@ -79,8 +79,7 @@ Project is created with
 
 ## Status
 App available on the Google Play Store<br/>
-View app's landing page<br/>
-https://madrigalceiara.wixsite.com/website<br/>
+View app's landing page https://madrigalceiara.wixsite.com/website<br/><br/>
 This is a project created by @MadCodes9 :grinning:
 
 
