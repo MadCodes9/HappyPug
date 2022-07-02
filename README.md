@@ -75,7 +75,7 @@ Project is created with
 * Language: Dart
 
 **Sample Output**
-![image](ScreenShots/Screenshot1.png)
+![image](ScreenShots/Screenshot2.png)
 
 ## Download
 App available on the Google Play Store
