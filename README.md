@@ -75,11 +75,11 @@ Project is created with
 * Language: Dart
 
 ## Sample Output
- <img src="ScreenShots/Screenshot2.png" height="550" align="left"> 
+ <img src="ScreenShots/Screenshot2.png" height="300" align="left"> 
 <p align="center">
- <img src="ScreenShots/Screenshot2.png" height="550"> 
+ <img src="ScreenShots/Screenshot2.png" height="300"> 
 </p>
-<img src="ScreenShots/Screenshot2.png" height="550" align="left"> 
+<img src="ScreenShots/Screenshot2.png" height="300" align="right"> 
 
 
 ## Status
