@@ -77,6 +77,6 @@ Project is created with
 **Sample Output**
 ![image](ScreenShots/Screenshot2.png)
 
-## Download
+## Status
 App available on the Google Play Store
 
