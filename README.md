@@ -75,7 +75,7 @@ Project is created with
 * Language: Dart
 
 **Sample Output**
-![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
+![image](ScreenShots/Screenshot1.png)
 ![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
 ![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
 ![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
