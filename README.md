@@ -79,9 +79,7 @@ Project is created with
 <p align="center">
  <img src="ScreenShots/Screenshot2.png" height="550"> 
 </p>
-<p align="center">
- <img src="ScreenShots/Screenshot2.png" height="550"> 
-</p>
+<img src="ScreenShots/Screenshot2.png" height="550" align="left"> 
 
 
 ## Status
