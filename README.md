@@ -77,7 +77,7 @@ Project is created with
 ## Sample Output
  <img src="ScreenShots/Screenshot2.png" height="600" align="left"> 
 <p align="center">
- <img src="ScreenShots/Screenshot2.png" height="600"> 
+ <img src="ScreenShots/Screenshot3.png" height="600"> 
 </p>
 
 ## Status
