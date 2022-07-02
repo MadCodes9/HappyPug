@@ -79,7 +79,10 @@ Project is created with
 <p align="center">
  <img src="ScreenShots/Screenshot2.png" height="550"> 
 </p>
- <img src="ScreenShots/Screenshot2.png" height="550" align="right"> 
+<p align="center">
+ <img src="ScreenShots/Screenshot2.png" height="550"> 
+</p>
+
 
 ## Status
 App available on the Google Play Store<br/>
