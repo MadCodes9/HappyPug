@@ -76,9 +76,6 @@ Project is created with
 
 **Sample Output**
 ![image](ScreenShots/Screenshot1.png)
-![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
-![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
-![image](https://github.com/MadCodes9/UsernamesAndPasswords/blob/main/UP2.png)
 
 ## Download
 App available on the Google Play Store
