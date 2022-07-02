@@ -19,11 +19,6 @@ five ingredients are green, than add another full points and if there contains a
 subtract another half-points and if there contains a red than subtract another full points.
 
 **Filitering Function Used**
-
-## Technologies
-## Setup
-
-**Sample Output**
 ```Dart
 Future _filterIngredients() async {
     String trim_ingredients = scannedText.replaceAll(':', ','); //replace any semicolons with commas
@@ -73,3 +68,9 @@ Future _filterIngredients() async {
     setPieChartData();  //filter ingredients by label
   }
   ```
+
+## Technologies
+## Setup
+
+**Sample Output**
+
