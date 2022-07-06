@@ -16,10 +16,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:string_extensions/string_extensions.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+
 
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
+
+  DecorationImage(
+    image: AssetImage("/media/madri/New Volume/CSCI/CS4750/happy_pug/android/assets/images/splash_background.png"),
+      fit: BoxFit.fill,
+  );
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -60,6 +68,11 @@ Future<void> execute(
     },
   );
   runApp(MyApp());
+}
+
+Future initialization(BuildContext? context) async{
+  //Delay to show splash screen and load resources
+  await Future.delayed(Duration(seconds: 3));
 }
 
 class MyApp extends StatelessWidget { //global data, style of entire app
@@ -463,6 +476,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String trim_ingredients = scannedText.replaceAll(':', ','); //replace any semicolons with a comma
     trim_ingredients = trim_ingredients.replaceAll('Ingredients', ','); //separate 'Ingredients' with a comma
     trim_ingredients = trim_ingredients.replaceAll('INGREDIENTS', ','); //separate 'INGREDIENTS' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('.', ','); //separate period with a comma
     trim_ingredients = trim_ingredients.replaceAll('(', ','); //separate '(' and ')' with commas to get actual ingredient name
     trim_ingredients = trim_ingredients.replaceAll(')', ',');
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
@@ -477,7 +491,7 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Scanned Text");
       print(scannedIngredients[i]);
     }
-        ReCase rc_name;
+    ReCase rc_name;
     await FirebaseFirestore.instance.collection("ingredients").get()
         .then((querySnapshot) {
       print("Successfully load all ingredients");
