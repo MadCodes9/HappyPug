@@ -15,6 +15,7 @@ import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:string_extensions/string_extensions.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
@@ -23,7 +24,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
 
   await execute(InternetConnectionChecker());
   // Create customized instance which can be registered via dependency injection
@@ -42,13 +42,8 @@ Future<void> execute(
   // Simple check to see if we have Internet
   print('''The statement 'this machine is connected to the Internet' is: ''');
   final bool isConnected = await InternetConnectionChecker().hasConnection;
-  // ignore: avoid_print
-  print(
-    isConnected.toString(),
-  );
-  print(
-    'Current status: ${await InternetConnectionChecker().connectionStatus}',
-  );
+  print(isConnected.toString(),);
+  print('Current status: ${await InternetConnectionChecker().connectionStatus}',);
 
   // actively listen for status updates
   final StreamSubscription<InternetConnectionStatus> listener =
@@ -64,7 +59,6 @@ Future<void> execute(
       }
     },
   );
-
   runApp(MyApp());
 }
 
@@ -75,7 +69,8 @@ class MyApp extends StatelessWidget { //global data, style of entire app
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'Home')
+      home: MyHomePage(title: 'Home'),
+
     );
   }
 }
@@ -109,9 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
   var ingredientImageUrl;
 
 
+
   @override
   void initState() {
     super.initState();
+
   }
 
   @override
@@ -125,7 +122,6 @@ class _MyHomePageState extends State<MyHomePage> {
       themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
         appBar: AppBar(
-          //centerTitle: true,
           title:  Text("Happy Pug", textAlign: TextAlign.left, style: GoogleFonts.pacifico(fontSize: 25, fontWeight: FontWeight.w500)),
           actions: [
             Transform.scale(
@@ -240,7 +236,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       borderRadius: BorderRadius.circular(8.0)),
                                 ),
                                 onPressed: () {
-                                  getImage(ImageSource.gallery);
+                                  //check permissions to gallery
+                                  checkPermissionStatus(ImageSource.gallery);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -273,7 +270,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                       borderRadius: BorderRadius.circular(8.0)),
                                 ),
                                 onPressed: () {
-                                  getImage(ImageSource.camera);
+                                  //check permissions to camera
+                                  checkPermissionStatus(ImageSource.camera);
+
+
+                                  //getImage(ImageSource.camera);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -307,9 +308,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     padding: EdgeInsets.all(10),
                                     child: ElevatedButton(
                                         onPressed: () {
-                                          //user can press btn only once
-                                          if(onClickResults == false){
-                                            filteringResults = true;
+                                          filteringResults = true;
+                                          if(onClickResults == false){  //user can press btn only once
                                             //filter ingredients then calculate the ingredient rating
                                             // then load image from real time database and than go to result page
                                              _filterIngredients().then((value) => calculateOverallRating()).
@@ -331,6 +331,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+//// width: MediaQuery.of(context).size.width, height: (MediaQuery.of(context).size.height - 80) / 2
+  //USE FOR WIDTH AND HEIGHT
   FutureOr reset(){ //reset all counters
     numOfGreenIngred = 0;
     numOfRedIngred = 0;
@@ -339,6 +341,102 @@ class _MyHomePageState extends State<MyHomePage> {
     filteringResults = false;
     grade = {};
     setState((){});
+  }
+
+
+  void checkPermissionStatus(ImageSource source) async {
+    var cameraStatus = await Permission.camera.status;
+    print(cameraStatus);
+
+    if(!cameraStatus.isGranted){  //if camera is not granted, than request permission use
+      await Permission.camera.request();
+    }
+    if(await Permission.camera.isGranted){ //if camera is granted, than call function to open camera
+      getImage(source);
+    } else{ //camera is not granted, so open settings
+      print("No permission");
+
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              buttonPadding: EdgeInsets.all(0.8),
+              backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
+              title: Text("'Happy Pug' would like to access your camera", style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold,
+                  color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+              ),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Container(
+                      child: RichText(
+                          text: TextSpan(
+                            children:[
+                              WidgetSpan(
+                                  child: Padding(
+                                      padding: EdgeInsets.only(right: 5),
+                                      child: Icon(
+                                        Icons.camera,
+                                        color: Colors.blueAccent,
+                                        size: 20,
+                                      ),
+                                  )
+                              ),
+                              TextSpan(
+                                text: "This app needs access to your camera and gallery to take pictures of the ingredient labels.",
+                                style: TextStyle(fontSize: 15, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                              )
+                            ],
+                          )
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.only(top: 5),
+                      child: Text("Apps->Happy Pug->Permissions->Camera to grant access", style: TextStyle(fontSize: 15 ,
+                          color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+              actions: [
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.grey[50],
+                      side: BorderSide(color: Colors.grey, width: 0.8),
+                    ),
+                    child: Text("Cancel", style: TextStyle(fontSize: 15 ,
+                        color: Colors.blueGrey[900])
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                    ),
+                    child: Text("Open App Settings", style: TextStyle(fontSize: 15 ,
+                        color: Colors.white)
+                    ),
+                    onPressed:  () => openAppSettings(),
+
+                  )
+                )
+              ],
+            );
+          }
+      );
+    }
   }
 
 
@@ -361,8 +459,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _filterIngredients() async {
-    String trim_ingredients = scannedText.replaceAll(':', ','); //replace any semicolons with commas
-    trim_ingredients = trim_ingredients.replaceAll('Ingredients', ','); //separate 'Ingredient
+    //String manipulation to obtain all the ingredient names
+    String trim_ingredients = scannedText.replaceAll(':', ','); //replace any semicolons with a comma
+    trim_ingredients = trim_ingredients.replaceAll('Ingredients', ','); //separate 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('INGREDIENTS', ','); //separate 'INGREDIENTS' with a comma
     trim_ingredients = trim_ingredients.replaceAll('(', ','); //separate '(' and ')' with commas to get actual ingredient name
     trim_ingredients = trim_ingredients.replaceAll(')', ',');
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
@@ -387,10 +487,11 @@ class _MyHomePageState extends State<MyHomePage> {
         String cc_name = rc_name.camelCase;
         String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
 
-        //find where ingredients in database == scanned ingredients and store in map
+        //find where scanned ingredients == ingredients in database and store in map
         for (var i = 0; i < len; i++) {
           if (scannedIngredients[i] == formatted_name) {
             //Add name as key and fields as value
+            //SOMEWHERE HERE IS WHERE IT IS NOT IN ORDER!!!
              results[element.data()['name']] = [element.data()['description'],
              element.data()['color'], element.data()['label']];
             break;
@@ -500,7 +601,7 @@ class _MyHomePageState extends State<MyHomePage> {
       showDialog(
           context: context,
           builder: (context){
-            filteringResults = false; //reset click states
+            filteringResults = false; //reset click states to avoid bugs if user backs out of popup
             onClickResults = false;
             return  AlertDialog(
               buttonPadding: EdgeInsets.all(0.8),
@@ -533,6 +634,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
       );
     }
+    //if results are not empty, than go to search_results page
     setState((){
         if(results.isNotEmpty)
           Navigator.push( //change from one screen to another
@@ -604,6 +706,9 @@ class _MyHomePageState extends State<MyHomePage> {
     bool checkFirstFiveRed = false;
 
     for(var i = 0; i < results.keys.length; i++){
+      if(results.values.elementAt(i).elementAt(1) == "neutral"){ //if name.color == neutral
+        overallRating += point; //full point
+      }
       if(results.values.elementAt(i).elementAt(1) == "yellow"){
         overallRating += (point/2); //half point
         //check once if yellow in first 5 ingredients subtract bonus point once

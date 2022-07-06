@@ -175,14 +175,17 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                                         Padding(
                                                                           padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 4.0),
                                                                           child:  Text("The 'Overall Rating' is calculated out of one hundred. "
-                                                                              " When the ingredient list is filtered through the algorithm, "
+                                                                              "When the ingredient list is filtered through the algorithm, "
                                                                               "it reads the rating of each ingredient and either adds or "
-                                                                              "subtracts point. If a ingredient is green, then the "
-                                                                              "algorithm adds points, if a ingredient is yellow, "
+                                                                              "subtracts point. If a ingredient is green or blue then the "
+                                                                              "algorithm adds points, if a ingredient is yellow "
                                                                               "then the algorithm adds half-points and if the ingredient "
                                                                               "is red then no points are added. Additional points are either "
-                                                                              "added or subtracted if the first 5 ingredients all are green, or contains a yellow, "
-                                                                              "or contains a red. Finally, the overall ingredient rating is compared to a grading scale.",
+                                                                              "added or subtracted depending on the first 5 ingredients. If the "
+                                                                              "first five ingredients are all green/blue than a bonus point is "
+                                                                              "added, if there contains a yellow then a few points are subtracted, "
+                                                                              "and if there contains a red a larger sum of points are subtracted. Finally, "
+                                                                              "the overall ingredient rating is compared to a grading scale.",
                                                                               style: TextStyle(
                                                                                   fontSize: 15 * textScale,
                                                                                   color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
@@ -1109,7 +1112,7 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
     }
     else{
       return rating = Text(
-          "Neutral",
+          "General ingredient definition",
           style: TextStyle(fontSize: 15 * textScale, fontWeight: FontWeight.bold,
               color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
       );
