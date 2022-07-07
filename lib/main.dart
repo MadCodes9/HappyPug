@@ -16,8 +16,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:string_extensions/string_extensions.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-
+import 'package:emojis/emojis.dart';
 
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
@@ -100,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isDarkModeEnabled = false;
   bool filteringResults = false;
   bool onClickResults = false;
+  bool timerTriggered = false;
   XFile? imageFile;
   Map<String, List<String>> results = {};
   Map<String, double> pieChartData = {};
@@ -219,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ],
                                   ),
-                                if(filteringResults == true)
+                                if(filteringResults)
                                   Column(
                                     children: [
                                       Text("Filtering Ingredients...", style: TextStyle(fontSize: 18 * textScale,
@@ -228,6 +228,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Center(
                                         child: CircularProgressIndicator(),
                                       ),
+                                      if(timerTriggered)
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 60),
+                                          child: Text(
+                                            "Almost done, Please wait...${Emojis.dogFace}", style: TextStyle(fontSize: 18 * textScale,
+                                              fontWeight: FontWeight.bold, color: Colors.white),
+                                          ),
+                                        )
                                     ],
                                   ),
                               ],
@@ -285,9 +293,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () {
                                   //check permissions to camera
                                   checkPermissionStatus(ImageSource.camera);
-
-
-                                  //getImage(ImageSource.camera);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -321,7 +326,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                     padding: EdgeInsets.all(10),
                                     child: ElevatedButton(
                                         onPressed: () {
-                                          filteringResults = true;
+                                          setState((){
+                                            filteringResults = true;
+                                            Timer(Duration(seconds: 5), () {
+                                              setState((){
+                                                timerTriggered = true;
+                                              });
+                                            });
+                                          }); //set loading
+
                                           if(onClickResults == false){  //user can press btn only once
                                             //filter ingredients then calculate the ingredient rating
                                             // then load image from real time database and than go to result page
@@ -352,10 +365,10 @@ class _MyHomePageState extends State<MyHomePage> {
     numOfYellowIngred = 0;
     onClickResults = false;
     filteringResults = false;
+    timerTriggered = false;
     grade = {};
     setState((){});
   }
-
 
   void checkPermissionStatus(ImageSource source) async {
     var cameraStatus = await Permission.camera.status;
@@ -482,45 +495,69 @@ class _MyHomePageState extends State<MyHomePage> {
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
     final len = scannedIngredients.length;
 
-    //format scanned text,  first letter and second letter is capitalize capitalize the first letter
-    // after space, delete all white space,
+    //format scanned text, first letter and second letter is capitalize, capitalize the first letter
+    // after space, delete all leading and trailing white space, search for ingredients in database
     for(var i = 0; i < len; i++){
       scannedIngredients[i] = scannedIngredients[i].titleCase;
       scannedIngredients[i] = scannedIngredients[i].split(" ").map((str) => str.capitalize).join(" ");
-      scannedIngredients[i] = scannedIngredients[i].replaceAll(new RegExp(r"\s+"), "");
-      print("Scanned Text");
-      print(scannedIngredients[i]);
+      //IF YOU WANT TO USE OLD METHOD UNCOMMENTED THIS LINE AND COMMENT LINE scannedIngredients[i] = scannedIngredients[i].trim();
+      //scannedIngredients[i] = scannedIngredients[i].replaceAll(new RegExp(r"\s+"), "");
+      scannedIngredients[i] = scannedIngredients[i].trim();
+      await _findResults(scannedIngredients[i]);
     }
-    ReCase rc_name;
-    await FirebaseFirestore.instance.collection("ingredients").get()
-        .then((querySnapshot) {
-      print("Successfully load all ingredients");
-      querySnapshot.docs.forEach((element) {
-        //format ingredients in database same above to compare
-        rc_name = ReCase(element.data()['name']);
-        String cc_name = rc_name.camelCase;
-        String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
-
-        //find where scanned ingredients == ingredients in database and store in map
-        for (var i = 0; i < len; i++) {
-          if (scannedIngredients[i] == formatted_name) {
-            //Add name as key and fields as value
-            //SOMEWHERE HERE IS WHERE IT IS NOT IN ORDER!!!
-             results[element.data()['name']] = [element.data()['description'],
-             element.data()['color'], element.data()['label']];
-            break;
-          }
-        }
-      });
-    }).catchError((error){
-      print("Fail to load all ingredients");
-      print(error);
+    print("Finished Filtering");
+    scannedIngredients.forEach((element) {
+      print("SCANNED");
+      print(element);
     });
+
+    //THIS METHOD DOES NOT SHOW RESULTS IN ORDER, BUT IS MUCH FASTER AT OBTAINING RESULTS
+    // ReCase rc_name;
+    // await FirebaseFirestore.instance.collection("ingredients").get()
+    //     .then((querySnapshot) {
+    //   print("Successfully load all ingredients");
+    //   querySnapshot.docs.forEach((element) {
+    //     //format ingredients in database same above to compare
+    //     rc_name = ReCase(element.data()['name']);
+    //     String cc_name = rc_name.camelCase;
+    //     String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
+    //
+    //     //find where scanned ingredients == ingredients in database and store in map
+    //     for (var i = 0; i < len; i++) {
+    //       if (scannedIngredients[i] == formatted_name) {
+    //         //Add name as key and fields as value
+    //         //SOMEWHERE HERE IS WHERE IT IS NOT IN ORDER!!!
+    //          results[element.data()['name']] = [element.data()['description'],
+    //          element.data()['color'], element.data()['label']];
+    //         break;
+    //       }
+    //     }
+    //   });
+    // }).catchError((error){
+    //   print("Fail to load all ingredients");
+    //   print(error);
+    // });
 
     print("Common ingredients found: ");
     print(results.keys);
     seperateByColorIngredients();  //filter ingredients by color
     setPieChartData();  //filter ingredients by label
+  }
+
+  Future<void> _findResults(String scannedIngredient) async{
+    await FirebaseFirestore.instance.collection("ingredients")
+        .where("name", isEqualTo: scannedIngredient).get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((element) {
+        //Add name as key and fields as value
+         results[element.data()['name']] = [element.data()['description'],
+          element.data()['color'], element.data()['label']];
+         return;
+        });
+      }).catchError((error){
+        print("Fail to load all ingredients");
+        print(error);
+      });
   }
 
   void getImage(ImageSource source) async {
