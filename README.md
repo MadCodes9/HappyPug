@@ -9,7 +9,7 @@ determined by inspection of each ingredient rating and first five ingredients fo
 Happy Pug relies on the firebase database, which is where the ingredient information is stored. Ingredient 
 infromation is reserached from the AAFCO and Tailblazers Pets website to ensure accuracy of each rating and
 description. Happy pug uses text recognition to scan the ingredient list and calls the database to find any
-simliar ingredients. The filitering function uses string manipulation to ensure that the scanned ingredients 
+similar ingredients. The filitering function uses string manipulation to ensure that the scanned ingredients 
 and the ingredients from the databse are in the same format since comparison is case sensitive. If any similar
 ingredients are found, then the results are displayed on the next screen. The overall rating system works out
 of a 100, so each ingredient a certain amount of points calculated by 100 divided by the number of ingredients 
