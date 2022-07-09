@@ -15,7 +15,7 @@ class MySearchResultsPage extends StatefulWidget {
   final Image scannedImage;
   final bool isDarkModeEnabled;
   final Map<String, List<String>> foundIngred;
-  final  Map<String, double> grade;
+  final Map<String, double> grade;
   final Map<String, double> pieChartData;
   final imageUrl;
   final Color gradeColor;
@@ -33,18 +33,8 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   bool pressed2 = true;
   Text rating = Text("");
   Map<String,Color> btnColor = {};
-  Map<String, double> test = {
-    "Meats":5,
-    "Fish & Shellfish":1,
-    "Grains":10,
-    "Vegetables":5,
-    "Fruits, Beans & Seeds":15,
-    "Herbs":4,
-    "Supplements":23,
-    "Additives":3,
-    "Other":7,
-  };
-
+  var lightGradient = [Colors.purple, Colors.deepPurple];
+  var darkGradient = [Color(0xFF253341), Color(0xFF212121)];
 
   @override
   void initState(){
@@ -64,20 +54,29 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
 
       home:  Scaffold(
         appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: widget.isDarkModeEnabled ?darkGradient:lightGradient
+                )
+            ),
+          ),
           actions: [
             IconButton(
+              splashRadius: 0.5,
               padding: EdgeInsets.only(left: 10),
               alignment: Alignment.centerLeft,
                 onPressed: () => mainPage(),
                 icon: Icon(
                   Icons.home_rounded,
                   color: Colors.white,
-                  size: 30,
+                  size: 27,
                 ),
-
             ),
           ],
-          title: const Text("Results", textAlign: TextAlign.left),
+          title: Text("Results", textAlign: TextAlign.left, style: TextStyle(fontSize: 20 * textScale)),
 
         ),
         body:
@@ -182,9 +181,9 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
                                                                               "then the algorithm adds half-points and if the ingredient "
                                                                               "is red then no points are added. Additional points are either "
                                                                               "added or subtracted depending on the first 5 ingredients. If the "
-                                                                              "first five ingredients are all green/blue than a bonus point is "
-                                                                              "added, if there contains a yellow then a few points are subtracted, "
-                                                                              "and if there contains a red a larger sum of points are subtracted. Finally, "
+                                                                              "first five ingredients are all green/blue than a +5 bonus point is added "
+                                                                              "added, if there contains a yellow then -3 bonus point is subtracted, "
+                                                                              "and if there contains a red a -5 bonus point is subtracted. Finally, "
                                                                               "the overall ingredient rating is compared to a grading scale.",
                                                                               style: TextStyle(
                                                                                   fontSize: 15 * textScale,
@@ -1056,7 +1055,6 @@ class _MySearchResultsState extends State<MySearchResultsPage> {
   void setAttributes() {
       results = widget.foundIngred;
       keys = widget.foundIngred.keys.toList();
-
   }
 
   //store ingredient name and color pair in Map to set the color of the dynamic buttons

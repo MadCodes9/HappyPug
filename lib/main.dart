@@ -115,13 +115,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Color gradeColor = Colors.transparent;
   var pugImageUrl;
   var ingredientImageUrl;
-
-
+  var lightGradient = [Colors.purple, Colors.deepPurple];
+  var darkGradient = [Color(0xFF253341), Color(0xFF212121)];
 
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -135,10 +134,19 @@ class _MyHomePageState extends State<MyHomePage> {
       themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
         appBar: AppBar(
-          title:  Text("Happy Pug", textAlign: TextAlign.left, style: GoogleFonts.pacifico(fontSize: 25, fontWeight: FontWeight.w500)),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: isDarkModeEnabled ?darkGradient:lightGradient
+              )
+            ),
+          ),
+          title:  Text("Happy Pug", textAlign: TextAlign.left, style: GoogleFonts.pacifico(fontSize: 24 * textScale, fontWeight: FontWeight.w500)),
           actions: [
             Transform.scale(
-              scale: 0.8,
+              scale: 0.65,
               child: DayNightSwitcher(
                 isDarkModeEnabled: isDarkModeEnabled,
                 onStateChanged: onStateChanged,
@@ -150,6 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Center(
             child: SingleChildScrollView(
               child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
                   margin: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -170,7 +180,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       if (!textScanning && imageFile == null)
                         Container(  //Template container
-                          width: 270,
+                          margin: EdgeInsets.only(bottom: 20),
+                          width: 270, //GET BETTER PICTURE
                           height: 388,
                           color: Colors.grey[300]!,
                           child: FutureBuilder(
@@ -203,10 +214,14 @@ class _MyHomePageState extends State<MyHomePage> {
                             Stack( //display scanned image
                               alignment: Alignment.center,
                               children: [
-                                Container(
-                                  width: 300,
-                                  height: 400,
-                                  child: Image.file(File(imageFile!.path)),
+                                //set a max height so if picture is in portrait mode, than doesn't take entire screen
+                                ConstrainedBox(
+                                    constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+                                  child:  Container(
+                                    margin: EdgeInsets.only(bottom: 20),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Image.file(File(imageFile!.path)),
+                                  ),
                                 ),
                                 if(textScanning)
                                   Column(
@@ -246,19 +261,31 @@ class _MyHomePageState extends State<MyHomePage> {
                       Row(  //UI
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(  //Gallery button
+                          Container(//Gallery button
                               margin: const EdgeInsets.symmetric(horizontal: 5),
-                              padding: const EdgeInsets.only(top: 10),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  shadowColor: Colors.grey[400],
-                                  elevation: 10,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0)),
-                                ),
+                              decoration: ShapeDecoration(
+                                shadows: [
+                                  BoxShadow(
+                                    color: isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    offset: Offset(0,5)
+                                  )
+                                ],
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: isDarkModeEnabled ?darkGradient:lightGradient
+                                  )
+                              ),
+                              child: MaterialButton(
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                elevation: 10,
                                 onPressed: () {
                                   //check permissions to gallery
-                                  checkPermissionStatus(ImageSource.gallery);
+                                  checkPermissionStatus(ImageSource.gallery, textScale);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -266,13 +293,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
+                                        color: Color(0xFFFAFAFA),
                                         Icons.image,
                                         size: 30,
                                       ),
                                       Text(
                                         "Gallery",
                                         style: TextStyle(
-                                            fontSize: 14 * textScale,
+                                          fontSize: 14 * textScale,
+                                          color: Color(0xFFFAFAFA),
                                         ),
                                       )
                                     ],
@@ -282,17 +311,29 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           Container(  //Camera button
                               margin: const EdgeInsets.symmetric(horizontal: 5),
-                              padding: const EdgeInsets.only(top: 10),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  shadowColor: Colors.grey[400],
-                                  elevation: 10,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0)),
-                                ),
+                              decoration: ShapeDecoration(
+                                  shadows: [
+                                    BoxShadow(
+                                        color: isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 10,
+                                        offset: Offset(0,5)
+                                    )
+                                  ],
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: isDarkModeEnabled ?darkGradient:lightGradient
+                                  )
+                              ),
+                              child: MaterialButton(
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                elevation: 10,
                                 onPressed: () {
                                   //check permissions to camera
-                                  checkPermissionStatus(ImageSource.camera);
+                                  checkPermissionStatus(ImageSource.camera, textScale);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -300,19 +341,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
+                                        color: Color(0xFFFAFAFA),
                                         Icons.camera_alt,
                                         size: 30,
                                       ),
                                       Text(
                                         "Camera",
                                         style: TextStyle(
-                                            fontSize: 14 * textScale,
+                                          fontSize: 14 * textScale,
+                                          color: Color(0xFFFAFAFA),
                                         ),
                                       )
                                     ],
                                   ),
                                 ),
-                              )),
+                              )
+                          ),
                         ],
                       ),
 
@@ -321,30 +365,52 @@ class _MyHomePageState extends State<MyHomePage> {
                         Column(
                             children:<Widget>[
                               Container(
-                                child:
-                                Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: ElevatedButton(
-                                        onPressed: () {
+                                margin: EdgeInsets.only(top: 15),
+                                decoration: ShapeDecoration(
+                                    shadows: [
+                                      BoxShadow(
+                                          color: isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 10,
+                                          offset: Offset(0,5)
+                                      )
+                                    ],
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: isDarkModeEnabled ?darkGradient:lightGradient
+                                    )
+                                ),
+                                child: MaterialButton(
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                    elevation: 10,
+                                    onPressed: () {
+                                      setState((){
+                                        filteringResults = true;
+                                        Timer(Duration(seconds: 5), () {
                                           setState((){
-                                            filteringResults = true;
-                                            Timer(Duration(seconds: 5), () {
-                                              setState((){
-                                                timerTriggered = true;
-                                              });
-                                            });
-                                          }); //set loading
+                                            timerTriggered = true;
+                                          });
+                                        });
+                                      }); //set loading
 
-                                          if(onClickResults == false){  //user can press btn only once
-                                            //filter ingredients then calculate the ingredient rating
-                                            // then load image from real time database and than go to result page
-                                             _filterIngredients().then((value) => calculateOverallRating()).
-                                            then((value) => loadPugImage()).then((value) => searchResultsPage());
-                                          }
-                                         onClickResults = true;
-                                        },
-                                        child: Text('View Results', style: TextStyle(fontSize: 14 * textScale))
-                                    ),
+                                      if(onClickResults == false){  //user can press btn only once
+                                        //filter ingredients then calculate the ingredient rating
+                                        // then load image from real time database and than go to result page
+                                        _filterIngredients().then((value) => calculateOverallRating()).
+                                        then((value) => loadPugImage()).then((value) => searchResultsPage(textScale));
+                                      }
+                                      onClickResults = true;
+                                    },
+                                    child: Text(
+                                        'View Results',
+                                        style: TextStyle(
+                                          fontSize: 14 * textScale,
+                                          color: Color(0xFFFAFAFA),
+                                        )
+                                    )
                                 ),
                               ),
                             ]
@@ -370,7 +436,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState((){});
   }
 
-  void checkPermissionStatus(ImageSource source) async {
+  void checkPermissionStatus(ImageSource source, double textScale) async {
     var cameraStatus = await Permission.camera.status;
     print(cameraStatus);
 
@@ -388,7 +454,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return AlertDialog(
               buttonPadding: EdgeInsets.all(0.8),
               backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
-              title: Text("'Happy Pug' would like to access your camera", style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold,
+              title: Text("'Happy Pug' would like to access your camera", style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
                   color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
               ),
               content: SingleChildScrollView(
@@ -410,7 +476,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               TextSpan(
                                 text: "This app needs access to your camera and gallery to take pictures of the ingredient labels.",
-                                style: TextStyle(fontSize: 15, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                style: TextStyle(fontSize: 15  * textScale, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
                               )
                             ],
                           )
@@ -419,7 +485,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     Padding(
                       padding: EdgeInsets.only(top: 5),
-                      child: Text("Apps->Happy Pug->Permissions->Camera to grant access", style: TextStyle(fontSize: 15 ,
+                      child: Text("Apps->Happy Pug->Permissions->Camera to grant access", style: TextStyle(fontSize: 15  * textScale ,
                           color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                       ),
                     ),
@@ -435,7 +501,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       backgroundColor: Colors.grey[50],
                       side: BorderSide(color: Colors.grey, width: 0.8),
                     ),
-                    child: Text("Cancel", style: TextStyle(fontSize: 15 ,
+                    child: Text("Cancel", style: TextStyle(fontSize: 15  * textScale ,
                         color: Colors.blueGrey[900])
                     ),
                     onPressed: () => Navigator.push(
@@ -451,7 +517,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                     ),
-                    child: Text("Open App Settings", style: TextStyle(fontSize: 15 ,
+                    child: Text("Open App Settings", style: TextStyle(fontSize: 15 * textScale ,
                         color: Colors.white)
                     ),
                     onPressed:  () => openAppSettings(),
@@ -592,62 +658,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  void noInternetPopup(){ //checks for Internet connection when app opens
-    showDialog(
-        context: context,
-        builder: (context){
-          filteringResults = false; //reset click states
-          onClickResults = false;
-          return AlertDialog(
-            buttonPadding: EdgeInsets.all(0.8),
-            backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
-            title: Text("Check Your Internet Connection", style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold,
-                color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
-            ),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: [
-                  Padding(
-                    padding:EdgeInsets.only(bottom: 10),
-                    child:  Icon(
-                      Icons.signal_wifi_connected_no_internet_4_rounded,
-                      color: Colors.blueAccent,
-                      size: 40,
-                    ),
-                  ),
-                  Text("It is taking a while to upload results.", style: TextStyle(fontSize: 15 ,
-                      color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
-                  ),
-                  Text("Either check your connection or try again", style: TextStyle(fontSize: 15 ,
-                      color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
-                  )
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed:  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
-                  ),
-                  child: Text("OK", style: TextStyle(fontSize: 15 ,
-                      color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
-                  )
-              )
-            ],
-          );
-        }
-    );
-    setState((){
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
-      ).then((value) => reset());
-    });
-  }
-
   //checks if results is empty, sends filtered data to search page and resets counters
-  void searchResultsPage(){
+  void searchResultsPage(double textScale){
     if(results.isEmpty){
       showDialog(
           context: context,
@@ -657,14 +669,14 @@ class _MyHomePageState extends State<MyHomePage> {
             return  AlertDialog(
               buttonPadding: EdgeInsets.all(0.8),
               backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
-              title: Text("Alert", style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold,
+              title: Text("Alert", style: TextStyle(fontSize: 18 * textScale , fontWeight: FontWeight.bold,
                   color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
               ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: [
                     Text("No ingredients found. Please try again and make sure to focus "
-                        "camera on the ingredient label.", style: TextStyle(fontSize: 15 ,
+                        "camera on the ingredient label.", style: TextStyle(fontSize: 15 * textScale ,
                         color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                     )
                   ],
@@ -676,7 +688,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       context,
                       MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
                     ),
-                    child: Text("OK", style: TextStyle(fontSize: 15 ,
+                    child: Text("OK", style: TextStyle(fontSize: 15 * textScale,
                         color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                     )
                 )
@@ -723,7 +735,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ThemeData lightTheme(){
     return ThemeData(
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.deepPurple[200],
+        primary: Colors.deepPurpleAccent,
       ),
       scaffoldBackgroundColor: Colors.grey[50],
       primaryColor: Colors.white,
@@ -733,7 +745,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
  ThemeData darkTheme(){
     return ThemeData(
-      appBarTheme: AppBarTheme(color: const Color(0xFF253341)),
+      appBarTheme: AppBarTheme(color: const Color(0xFF253341),),
       scaffoldBackgroundColor: const Color(0xFF15202B),
       primarySwatch: Colors.grey,
       primaryColor: const Color(0xFF253341),
@@ -764,7 +776,7 @@ class _MyHomePageState extends State<MyHomePage> {
         overallRating += (point/2); //half point
         //check once if yellow in first 5 ingredients subtract bonus point once
         if(i < 5 && checkFirstFiveYellow == false){
-          bonus -= (point/2);
+          bonus -= 3.0; //bonus point is -3
           checkFirstFiveYellow = true;
         }
       }
@@ -772,7 +784,7 @@ class _MyHomePageState extends State<MyHomePage> {
         overallRating += 0.0; //no point
         //check once if red in first 5 ingredients subtract bonus point once
         if(i < 5 && checkFirstFiveRed == false){
-          bonus -= (point);
+          bonus -= 5.0; //bonus point is -5
           checkFirstFiveRed = true;
         }
       }
@@ -781,7 +793,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //check once if all green in first 5 ingredients then add bonus point once
         if(i == 4 && checkFirstFiveGreen == false && checkFirstFiveYellow != true
             && checkFirstFiveRed != true){
-          bonus += point;
+          bonus += 5.0; //bonus point is +5
           checkFirstFiveGreen = true;
         }
       }
