@@ -17,11 +17,10 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:string_extensions/string_extensions.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:emojis/emojis.dart';
-
+import 'package:auto_size_text/auto_size_text.dart';
 
 //void main() => runApp(MyApp()); //lambda expression same as below format
 void main() async {
-
   DecorationImage(
     image: AssetImage("/media/madri/New Volume/CSCI/CS4750/happy_pug/android/assets/images/splash_background.png"),
       fit: BoxFit.fill,
@@ -81,22 +80,22 @@ class MyApp extends StatelessWidget { //global data, style of entire app
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'Home'),
-
+      home: MyHomePage(title: 'Home', isDarkModeEnabled: false,),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);//constructor
+  MyHomePage({Key? key, required this.title, required this.isDarkModeEnabled}) : super(key: key);//constructor
   String title; //attribute
+  bool isDarkModeEnabled;
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 class _MyHomePageState extends State<MyHomePage> {
   bool textScanning = false;
-  bool isDarkModeEnabled = false;
   bool filteringResults = false;
   bool onClickResults = false;
   bool timerTriggered = false;
@@ -115,8 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Color gradeColor = Colors.transparent;
   var pugImageUrl;
   var ingredientImageUrl;
-  var lightGradient = [Colors.purple, Colors.deepPurple];
-  var darkGradient = [Color(0xFF253341), Color(0xFF212121)];
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -131,24 +129,25 @@ class _MyHomePageState extends State<MyHomePage> {
       title: "Home",
       theme: lightTheme(),
       darkTheme: darkTheme(),
-      themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
+      themeMode: widget.isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
         appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: isDarkModeEnabled ?darkGradient:lightGradient
-              )
-            ),
+          title: AutoSizeText(
+            "Happy Pug",
+            textAlign: TextAlign.left,
+            style: GoogleFonts.pacifico(fontSize: 20, fontWeight: FontWeight.w500),
+            maxLines: 1,
+            minFontSize: 12,
+            //stepGranularity: 5.0, //decreases by 5 when text doesn't fit
+            presetFontSizes: [20, 18, 14],
+            overflow: TextOverflow.ellipsis,
+            //wrapWords: false, //this wont break up words to next line, just shrink text to fit
           ),
-          title:  Text("Happy Pug", textAlign: TextAlign.left, style: GoogleFonts.pacifico(fontSize: 24 * textScale, fontWeight: FontWeight.w500)),
           actions: [
             Transform.scale(
-              scale: 0.65,
+              scale: 0.7,
               child: DayNightSwitcher(
-                isDarkModeEnabled: isDarkModeEnabled,
+                isDarkModeEnabled: widget.isDarkModeEnabled,
                 onStateChanged: onStateChanged,
                 dayBackgroundColor: Colors.white24,
               ),
@@ -156,140 +155,167 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         body: Center(
-            child: SingleChildScrollView(
-              child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  margin: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children:[
-                      if(!textScanning && imageFile == null)
-                        Column(
-                          children: [
-                            Text("Scan Ingredients", style: TextStyle(fontSize: 18 * textScale,
-                            fontWeight: FontWeight.bold, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5,right: 5,top: 6, bottom: 20),
-                              child: Text("Focus camera on the ingredient list of your dog food product like below",
-                                style: TextStyle(fontSize: 15 * textScale, color: Colors.blueGrey[600])),
-                            ),
-                          ],
-                        ),
-
-                      if (!textScanning && imageFile == null)
-                        Container(  //Template container
-                          margin: EdgeInsets.only(bottom: 20),
-                          width: 270, //GET BETTER PICTURE
-                          height: 388,
-                          color: Colors.grey[300]!,
-                          child: FutureBuilder(
-                            future: loadIngredientListImage(),
-                              builder: (context, snapshot){
-                                if(snapshot.connectionState == ConnectionState.done){
-                                   return Image.network(ingredientImageUrl);
-                                }
-                                if(snapshot.connectionState == ConnectionState.waiting){
-                                  return Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                return Container();
-                              }
+            widthFactor:  MediaQuery.of(context).size.width,
+            heightFactor: MediaQuery.of(context).size.height,
+            child: GlowingOverscrollIndicator(
+                axisDirection: AxisDirection.down,
+                color:  Colors.deepPurple,
+                child: Scrollbar(
+                  controller: _scrollController,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(20),
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children:[
+                        if(!textScanning && imageFile == null)
+                          AutoSizeText(
+                              "Scan Ingredients",
+                              maxLines: 1,
+                              presetFontSizes: [18, 15, 14],
+                              minFontSize: 12,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                          ),
+                        if(!textScanning && imageFile == null)
+                          Padding(
+                            padding: EdgeInsets.only(left: 5,right: 5,top: 6, bottom: 20),
+                            child: AutoSizeText(
+                                "Focus camera on the ingredient list of your dog food product like below",
+                                maxLines: 2,
+                                presetFontSizes: [15, 14, 12],
+                                minFontSize: 12,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 12, color: Colors.blueGrey[600])),
                           ),
 
-                        ),
-
-                      if (imageFile != null)
-                        Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child:
-                              Text("Captured Image", style: TextStyle(fontSize: 18 * textScale,
-                                  fontWeight: FontWeight.bold, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
-                              ),
+                        if (!textScanning && imageFile == null)
+                          Container(  //Template container
+                            margin: EdgeInsets.only(bottom: 20),
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            color: Colors.grey[300]!,
+                            child: FutureBuilder(
+                                future: loadIngredientListImage(),
+                                builder: (context, snapshot){
+                                  if(snapshot.connectionState == ConnectionState.done){
+                                    return Image.network(ingredientImageUrl, fit: BoxFit.fill,);
+                                  }
+                                  if(snapshot.connectionState == ConnectionState.waiting){
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return Container();
+                                }
                             ),
-                            Stack( //display scanned image
-                              alignment: Alignment.center,
-                              children: [
-                                //set a max height so if picture is in portrait mode, than doesn't take entire screen
-                                ConstrainedBox(
-                                    constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
-                                  child:  Container(
-                                    margin: EdgeInsets.only(bottom: 20),
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Image.file(File(imageFile!.path)),
-                                  ),
+                          ),
+
+                        if (imageFile != null)
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(10),
+                                child:
+                                AutoSizeText(
+                                    "Captured Image",
+                                    maxLines: 1,
+                                    presetFontSizes: [18, 15, 14],
+                                    minFontSize: 12,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                                 ),
-                                if(textScanning)
-                                  Column(
-                                    children: [
-                                      Text("Processing...", style: TextStyle(fontSize: 18 * textScale,
-                                          fontWeight: FontWeight.bold, color: Colors.white),
-                                      ),
-                                      Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ],
-                                  ),
-                                if(filteringResults)
-                                  Column(
-                                    children: [
-                                      Text("Filtering Ingredients...", style: TextStyle(fontSize: 18 * textScale,
-                                          fontWeight: FontWeight.bold, color: Colors.white),
-                                      ),
-                                      Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      if(timerTriggered)
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 60),
-                                          child: Text(
-                                            "Almost done, Please wait...${Emojis.dogFace}", style: TextStyle(fontSize: 18 * textScale,
-                                              fontWeight: FontWeight.bold, color: Colors.white),
-                                          ),
-                                        )
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                      Row(  //UI
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(//Gallery button
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              decoration: ShapeDecoration(
-                                shadows: [
-                                  BoxShadow(
-                                    color: isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 10,
-                                    offset: Offset(0,5)
-                                  )
-                                ],
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: isDarkModeEnabled ?darkGradient:lightGradient
-                                  )
                               ),
-                              child: MaterialButton(
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                elevation: 10,
-                                onPressed: () {
-                                  //check permissions to gallery
-                                  checkPermissionStatus(ImageSource.gallery, textScale);
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                              Stack( //display scanned image
+                                alignment: Alignment.center,
+                                children: [
+                                  //set a max height so if picture is in portrait mode, than doesn't take entire screen
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+                                    child:  Container(
+                                      margin: EdgeInsets.only(bottom: 20),
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Image.file(File(imageFile!.path)),
+                                    ),
+                                  ),
+                                  if(textScanning)
+                                    ConstrainedBox(
+                                      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width * 0.6),
+                                      child:  Column(
+                                        children: [
+                                          AutoSizeText(
+                                              "Processing...",
+                                              maxLines: 1,
+                                              presetFontSizes: [18, 15, 14],
+                                              minFontSize: 12,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                                          Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  if(filteringResults)
+                                    ConstrainedBox(
+                                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                                      child: Column(
+                                        children: [
+                                          AutoSizeText(
+                                            "Filtering Ingredients...",
+                                            maxLines: 1,
+                                            presetFontSizes: [18, 15, 14],
+                                            minFontSize: 12,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                                          ),
+                                          Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                          if(timerTriggered)
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 60),
+                                              child: AutoSizeText(
+                                                "Almost done, Please wait...${Emojis.dogFace}",
+                                                maxLines: 2,
+                                                presetFontSizes: [18, 15, 14],
+                                                minFontSize: 12,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                                              ),
+                                            )
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                        Row(  //UI
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(//Gallery button
+                                height: MediaQuery.of(context).size.height * 0.1,
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                    elevation: 10,
+                                    primary: widget.isDarkModeEnabled ?Color(0xFF253341):Colors.deepPurple[400],
+                                    shadowColor: widget.isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
+                                  ),
+                                  onPressed: () {
+                                    //check permissions to gallery
+                                    checkPermissionStatus(ImageSource.gallery, textScale);
+                                  },
                                   child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
@@ -297,134 +323,139 @@ class _MyHomePageState extends State<MyHomePage> {
                                         Icons.image,
                                         size: 30,
                                       ),
-                                      Text(
+                                      AutoSizeText(
                                         "Gallery",
+                                        maxLines: 1,
+                                        minFontSize: 12,
+                                        stepGranularity: 2.0,
+                                        wrapWords: false,
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          fontSize: 14 * textScale,
+                                          fontSize: 14,
                                           color: Color(0xFFFAFAFA),
                                         ),
                                       )
                                     ],
                                   ),
                                 ),
-                              )
-                          ),
-                          Container(  //Camera button
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              decoration: ShapeDecoration(
-                                  shadows: [
-                                    BoxShadow(
-                                        color: isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
-                                        spreadRadius: 2,
-                                        blurRadius: 10,
-                                        offset: Offset(0,5)
-                                    )
-                                  ],
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: isDarkModeEnabled ?darkGradient:lightGradient
+                              ),
+                            ),
+
+                            Expanded(
+                              child: Container(  //Camera button
+                                  height: MediaQuery.of(context).size.height * 0.1,
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  alignment: Alignment.centerLeft,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                      elevation: 10,
+                                      primary: widget.isDarkModeEnabled ?Color(0xFF253341):Colors.deepPurple[400],
+                                      shadowColor: widget.isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
+                                    ),
+                                    onPressed: () {
+                                      //check permissions to camera
+                                      checkPermissionStatus(ImageSource.camera, textScale);
+                                    },
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          color: Color(0xFFFAFAFA),
+                                          Icons.camera_alt,
+                                          size: 30,
+                                        ),
+                                        AutoSizeText(
+                                          "Camera",
+                                          maxLines: 1,
+                                          minFontSize: 12,
+                                          stepGranularity: 2.0,
+                                          wrapWords: false,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFFFAFAFA),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   )
                               ),
-                              child: MaterialButton(
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                elevation: 10,
-                                onPressed: () {
-                                  //check permissions to camera
-                                  checkPermissionStatus(ImageSource.camera, textScale);
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        color: Color(0xFFFAFAFA),
-                                        Icons.camera_alt,
-                                        size: 30,
+                            ),
+
+
+                          ],
+                        ),
+
+                        //once loading is done display buttons and results are not empty
+                        if(textScanning == false && imageFile != null)
+                          Column(
+                              children:<Widget>[
+                                Container(
+                                  margin: EdgeInsets.only(top: 15),
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+                                        elevation: 10,
+                                        primary: widget.isDarkModeEnabled ?Color(0xFF253341):Colors.deepPurple[400],
+                                        shadowColor:  widget.isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
                                       ),
-                                      Text(
-                                        "Camera",
-                                        style: TextStyle(
-                                          fontSize: 14 * textScale,
-                                          color: Color(0xFFFAFAFA),
-                                        ),
+                                      onPressed: () {
+                                        setState((){
+                                          filteringResults = true;
+                                        });
+
+                                        if(onClickResults == false){  //user can press btn only once
+                                          //filter ingredients then calculate the ingredient rating
+                                          // then load image from real time database and than go to result page
+                                          _filterIngredients().then((value) => calculateOverallRating()).
+                                          then((value) => loadPugImage()).then((value) => searchResultsPage(textScale));
+                                        }
+                                        onClickResults = true;
+                                      },
+                                      child: AutoSizeText(
+                                          'View Results',
+                                          maxLines: 1,
+                                          minFontSize: 12,
+                                          stepGranularity: 2.0,
+                                          wrapWords: false,
+                                          style: TextStyle(fontSize: 14, color: Color(0xFFFAFAFA))
                                       )
-                                    ],
                                   ),
                                 ),
-                              )
+                              ]
                           ),
-                        ],
-                      ),
 
-                      //once loading is done display buttons and results are not empty
-                      if(textScanning == false && imageFile != null)
-                        Column(
-                            children:<Widget>[
-                              Container(
-                                margin: EdgeInsets.only(top: 15),
-                                decoration: ShapeDecoration(
-                                    shadows: [
-                                      BoxShadow(
-                                          color: isDarkModeEnabled ?Color(0xFF253341).withOpacity(0.5):Color(0xFFBDBDBD).withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 10,
-                                          offset: Offset(0,5)
-                                      )
-                                    ],
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: isDarkModeEnabled ?darkGradient:lightGradient
-                                    )
-                                ),
-                                child: MaterialButton(
-                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                    elevation: 10,
-                                    onPressed: () {
-                                      setState((){
-                                        filteringResults = true;
-                                        Timer(Duration(seconds: 5), () {
-                                          setState((){
-                                            timerTriggered = true;
-                                          });
-                                        });
-                                      }); //set loading
-
-                                      if(onClickResults == false){  //user can press btn only once
-                                        //filter ingredients then calculate the ingredient rating
-                                        // then load image from real time database and than go to result page
-                                        _filterIngredients().then((value) => calculateOverallRating()).
-                                        then((value) => loadPugImage()).then((value) => searchResultsPage(textScale));
-                                      }
-                                      onClickResults = true;
-                                    },
-                                    child: Text(
-                                        'View Results',
-                                        style: TextStyle(
-                                          fontSize: 14 * textScale,
-                                          color: Color(0xFFFAFAFA),
-                                        )
-                                    )
-                                ),
-                              ),
-                            ]
-                        ),
-                    ],
+                        //
+                        // ElevatedButton(
+                        //     onPressed: (){
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(builder: (context) => MyDatabasePage(title: "Home Page")),
+                        //       );
+                        //     },
+                        //     child:  Text(
+                        //         'Database',
+                        //         style: TextStyle(
+                        //           fontSize: 14 * textScale,
+                        //           color: Color(0xFFFAFAFA),
+                        //         )
+                        //     )
+                        // )
+                      ],
+                    ),
                   )
-              ),
-            )
+                )
+
+
+
+            ),
         ),
       ),
     );
   }
-//// width: MediaQuery.of(context).size.width, height: (MediaQuery.of(context).size.height - 80) / 2
-  //USE FOR WIDTH AND HEIGHT
+
   FutureOr reset(){ //reset all counters
     numOfGreenIngred = 0;
     numOfRedIngred = 0;
@@ -433,6 +464,7 @@ class _MyHomePageState extends State<MyHomePage> {
     filteringResults = false;
     timerTriggered = false;
     grade = {};
+
     setState((){});
   }
 
@@ -447,15 +479,19 @@ class _MyHomePageState extends State<MyHomePage> {
       getImage(source);
     } else{ //camera is not granted, so open settings
       print("No permission");
-
       showDialog(
           context: context,
           builder: (context){
             return AlertDialog(
               buttonPadding: EdgeInsets.all(0.8),
-              backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
-              title: Text("'Happy Pug' would like to access your camera", style: TextStyle(fontSize: 18 * textScale, fontWeight: FontWeight.bold,
-                  color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+              backgroundColor: widget.isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
+              title: AutoSizeText(
+                  "'Happy Pug' would like to access your camera",
+                  maxLines: 1,
+                  presetFontSizes: [18, 15, 14],
+                  minFontSize: 12,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
               ),
               content: SingleChildScrollView(
                 child: ListBody(
@@ -476,7 +512,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               TextSpan(
                                 text: "This app needs access to your camera and gallery to take pictures of the ingredient labels.",
-                                style: TextStyle(fontSize: 15  * textScale, color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
+                                style: TextStyle(fontSize: 15  * textScale, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900]),
                               )
                             ],
                           )
@@ -485,8 +521,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     Padding(
                       padding: EdgeInsets.only(top: 5),
-                      child: Text("Apps->Happy Pug->Permissions->Camera to grant access", style: TextStyle(fontSize: 15  * textScale ,
-                          color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                      child: AutoSizeText(
+                          "Apps->Happy Pug->Permissions->Camera to grant access",
+                          maxLines: 1,
+                          presetFontSizes: [15, 14, 12],
+                          minFontSize: 12,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 15, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                       ),
                     ),
 
@@ -501,12 +542,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       backgroundColor: Colors.grey[50],
                       side: BorderSide(color: Colors.grey, width: 0.8),
                     ),
-                    child: Text("Cancel", style: TextStyle(fontSize: 15  * textScale ,
-                        color: Colors.blueGrey[900])
+                    child: AutoSizeText(
+                        "Cancel",
+                        maxLines: 1,
+                        presetFontSizes: [15, 14, 12],
+                        minFontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 15, color: Colors.blueGrey[900])
                     ),
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
+                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page", isDarkModeEnabled: widget.isDarkModeEnabled,)),
                     ),
                   ),
                 ),
@@ -517,8 +563,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                     ),
-                    child: Text("Open App Settings", style: TextStyle(fontSize: 15 * textScale ,
-                        color: Colors.white)
+                    child: AutoSizeText(
+                        "Open App Settings",
+                        maxLines: 1,
+                        presetFontSizes: [15, 14, 12],
+                        minFontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 15, color: Colors.white)
                     ),
                     onPressed:  () => openAppSettings(),
 
@@ -551,59 +602,39 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _filterIngredients() async {
-    //String manipulation to obtain all the ingredient names
-    String trim_ingredients = scannedText.replaceAll(':', ','); //replace any semicolons with a comma
-    trim_ingredients = trim_ingredients.replaceAll('Ingredients', ','); //separate 'Ingredients' with a comma
-    trim_ingredients = trim_ingredients.replaceAll('INGREDIENTS', ','); //separate 'INGREDIENTS' with a comma
-    trim_ingredients = trim_ingredients.replaceAll('.', ','); //separate period with a comma
-    trim_ingredients = trim_ingredients.replaceAll('(', ','); //separate '(' and ')' with commas to get actual ingredient name
+    //String manipulation to format scanned ingredients the same as database ingredients-lowercaseName
+    String trim_ingredients = scannedText.replaceAll(':', ','); //replace any colons with a comma
+    trim_ingredients = trim_ingredients.replaceAll('Ingredients', ','); //replace 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('INGREDIENTS', ',');  //replace 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('Vitamins', ''); //replace 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('VITAMINS', '');  //replace 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('Minerals', ''); //replace 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('MINERALS', '');  //replace 'Ingredients' with a comma
+    trim_ingredients = trim_ingredients.replaceAll(';', ','); //replace ';' with a comma
+    trim_ingredients = trim_ingredients.replaceAll('.', ','); //replace period with a comma
+    trim_ingredients = trim_ingredients.replaceAll('[', '');
+    trim_ingredients = trim_ingredients.replaceAll(']', '');
+    trim_ingredients = trim_ingredients.replaceAll("-", ""); //replace  '-' with a space
+    trim_ingredients = trim_ingredients.replaceAll('(', ','); //replace '(' and ')' with commas to get actual ingredient name
     trim_ingredients = trim_ingredients.replaceAll(')', ',');
+    trim_ingredients = trim_ingredients.replaceAll(new RegExp(r"\s+"), "").toLowerCase(); //eliminate all spaces and lowercase
     List<String> scannedIngredients = trim_ingredients.split(","); //split ingredients after comma and store in list
-    final len = scannedIngredients.length;
 
-    //format scanned text, first letter and second letter is capitalize, capitalize the first letter
-    // after space, delete all leading and trailing white space, search for ingredients in database
+    // trim_ingredients = trim_ingredients.replaceAll(new RegExp(r"\([^)]*\)|()"), ""); //remove everything inside parenthesis
+    final len = scannedIngredients.length;
+    print("Scanned Ingredient Formatted");
+    print(scannedIngredients);
+
+    //search for ingredients in database
     for(var i = 0; i < len; i++){
-      scannedIngredients[i] = scannedIngredients[i].titleCase;
-      scannedIngredients[i] = scannedIngredients[i].split(" ").map((str) => str.capitalize).join(" ");
-      //IF YOU WANT TO USE OLD METHOD UNCOMMENTED THIS LINE AND COMMENT LINE scannedIngredients[i] = scannedIngredients[i].trim();
-      //scannedIngredients[i] = scannedIngredients[i].replaceAll(new RegExp(r"\s+"), "");
-      scannedIngredients[i] = scannedIngredients[i].trim();
+      if(i > len/2){  //timer is triggered when filtering is half-way finished
+        setState((){
+          timerTriggered = true;
+        });
+      }
       await _findResults(scannedIngredients[i]);
     }
     print("Finished Filtering");
-    scannedIngredients.forEach((element) {
-      print("SCANNED");
-      print(element);
-    });
-
-    //THIS METHOD DOES NOT SHOW RESULTS IN ORDER, BUT IS MUCH FASTER AT OBTAINING RESULTS
-    // ReCase rc_name;
-    // await FirebaseFirestore.instance.collection("ingredients").get()
-    //     .then((querySnapshot) {
-    //   print("Successfully load all ingredients");
-    //   querySnapshot.docs.forEach((element) {
-    //     //format ingredients in database same above to compare
-    //     rc_name = ReCase(element.data()['name']);
-    //     String cc_name = rc_name.camelCase;
-    //     String formatted_name = cc_name[0].toUpperCase() + cc_name.substring(1);//uppercase first character
-    //
-    //     //find where scanned ingredients == ingredients in database and store in map
-    //     for (var i = 0; i < len; i++) {
-    //       if (scannedIngredients[i] == formatted_name) {
-    //         //Add name as key and fields as value
-    //         //SOMEWHERE HERE IS WHERE IT IS NOT IN ORDER!!!
-    //          results[element.data()['name']] = [element.data()['description'],
-    //          element.data()['color'], element.data()['label']];
-    //         break;
-    //       }
-    //     }
-    //   });
-    // }).catchError((error){
-    //   print("Fail to load all ingredients");
-    //   print(error);
-    // });
-
     print("Common ingredients found: ");
     print(results.keys);
     seperateByColorIngredients();  //filter ingredients by color
@@ -612,7 +643,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _findResults(String scannedIngredient) async{
     await FirebaseFirestore.instance.collection("ingredients")
-        .where("name", isEqualTo: scannedIngredient).get()
+        .where("lowercaseName", isEqualTo: scannedIngredient).get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((element) {
         //Add name as key and fields as value
@@ -668,16 +699,26 @@ class _MyHomePageState extends State<MyHomePage> {
             onClickResults = false;
             return  AlertDialog(
               buttonPadding: EdgeInsets.all(0.8),
-              backgroundColor: isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
-              title: Text("Alert", style: TextStyle(fontSize: 18 * textScale , fontWeight: FontWeight.bold,
-                  color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+              backgroundColor: widget.isDarkModeEnabled ?Colors.blueGrey[900]: Colors.white,
+              title: AutoSizeText(
+                  "Alert",
+                  maxLines: 1,
+                  presetFontSizes: [18, 15, 14],
+                  minFontSize: 12,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
               ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: [
-                    Text("No ingredients found. Please try again and make sure to focus "
-                        "camera on the ingredient label.", style: TextStyle(fontSize: 15 * textScale ,
-                        color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                    AutoSizeText(
+                        "No ingredients found. Please try again and make sure to focus "
+                        "camera on the ingredient label.",
+                        maxLines: 4,
+                        presetFontSizes: [15, 14, 12],
+                        minFontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 15, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                     )
                   ],
                 ),
@@ -686,10 +727,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                     onPressed:  () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page")),
+                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Home Page", isDarkModeEnabled: widget.isDarkModeEnabled,)),
                     ),
-                    child: Text("OK", style: TextStyle(fontSize: 15 * textScale,
-                        color: isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
+                    child: AutoSizeText(
+                        "OK",
+                        maxLines: 1,
+                        presetFontSizes: [15, 14, 12],
+                        minFontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 15, color: widget.isDarkModeEnabled ?Colors.white: Colors.blueGrey[900])
                     )
                 )
               ],
@@ -706,7 +752,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 foundIngred: results, numOfgreenIngred: numOfGreenIngred,
                 numOfredIngred: numOfRedIngred, numOfyellowIngred: numOfYellowIngred,
                 scannedImage: Image.file(File(imageFile!.path)), imageUrl: pugImageUrl,
-                isDarkModeEnabled: isDarkModeEnabled, grade: grade, gradeColor: gradeColor,
+                isDarkModeEnabled: widget.isDarkModeEnabled, grade: grade, gradeColor: gradeColor,
                 pieChartData: pieChartData,
             ))).then((value) => reset());
           print("Now on Results Page");//debug
@@ -735,12 +781,16 @@ class _MyHomePageState extends State<MyHomePage> {
   ThemeData lightTheme(){
     return ThemeData(
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.deepPurpleAccent,
+        primary:Color(0xFF7E57C2),
       ),
+
       scaffoldBackgroundColor: Colors.grey[50],
       primaryColor: Colors.white,
       brightness: Brightness.light,
       dividerColor: Colors.white54,
+
+    //     List<Color> lightGradient = [Color(0xFF9C27B0), Color(0xFF673AB7)];
+    // List<Color> darkGradient = [Color(0xFF253341), Color(0xFF212121)];
     );
   }
  ThemeData darkTheme(){
@@ -756,7 +806,7 @@ class _MyHomePageState extends State<MyHomePage> {
  }
   void onStateChanged(bool isDarkModeEnabled) {
     setState(() {
-      this.isDarkModeEnabled = isDarkModeEnabled;
+      this.widget.isDarkModeEnabled = isDarkModeEnabled;
     });
   }
 
@@ -775,7 +825,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if(results.values.elementAt(i).elementAt(1) == "yellow"){
         overallRating += (point/2); //half point
         //check once if yellow in first 5 ingredients subtract bonus point once
-        if(i < 5 && checkFirstFiveYellow == false){
+        //make sure there is more than 5 ingredients to add bonus points
+        if(i < 5 && checkFirstFiveYellow == false && results.keys.length > 5){
           bonus -= 3.0; //bonus point is -3
           checkFirstFiveYellow = true;
         }
@@ -783,7 +834,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if(results.values.elementAt(i).elementAt(1) == "red"){
         overallRating += 0.0; //no point
         //check once if red in first 5 ingredients subtract bonus point once
-        if(i < 5 && checkFirstFiveRed == false){
+        //make sure there is more than 5 ingredients to add bonus points
+        if(i < 5 && checkFirstFiveRed == false && results.keys.length > 5){
           bonus -= 5.0; //bonus point is -5
           checkFirstFiveRed = true;
         }
@@ -799,8 +851,10 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     overallRating += bonus; //add bonus points to overall rating
-    print("Rating");
+    print("Overall Rating");
     print(overallRating);
+    print("Bonus Points");
+    print(bonus);
 
     if(overallRating >= 97.0){
       grade["A+"] = overallRating;

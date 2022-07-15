@@ -63,7 +63,7 @@ class _MyDatabaseState extends State<MyDatabasePage> {  //home screen actions
                 )
             ),
 
-
+          ///replaceAll(new RegExp(r"\s+"), "");
 
             ElevatedButton(
                 onPressed: (){
@@ -73,6 +73,8 @@ class _MyDatabaseState extends State<MyDatabasePage> {  //home screen actions
                       "description": descriptionController.text,
                       "label": labelController.text,
                       "name": nameController.text,
+                      //"lowercaseName": nameController.text.replaceAll(new RegExp(r"/-|\s/g"), "").toLowerCase(),
+                    "lowercaseName": nameController.text.replaceAll("-", "").replaceAll(new RegExp(r"\s+"), "").toLowerCase(),
                     }).then((value) {
                       print("Successfully added ingredient");
                     }).catchError((error){
